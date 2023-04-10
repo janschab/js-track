@@ -1,7 +1,7 @@
 .car {
   width: 0;
   height: 0;
-  position: relative;
+  position: absolute;
 
   &:after {
     content: "";
@@ -10,7 +10,7 @@
     bottom: -10px;
     left: -25px;
     right: - 25px;
-    background-color: #222;
+    background-color: #e06262;
     border-radius: 5px;
   }
 }

@@ -41,7 +41,9 @@ export class TrackTile {
       this.element = document.createElement('div');
       this.element.classList.add('track-tile');
       this.element.style.width = this.size.x + 'px'
-      this.element.style.height = this.size.y + 'px'
+      this.element.style.height = this.size.y + 'px';
+      this.element.style.top = this.position.y * DEFAULT_DIMENSION + 'px';
+      this.element.style.left = this.position.x * DEFAULT_DIMENSION + 'px';
 
       trackElement.appendChild(this.element);
 

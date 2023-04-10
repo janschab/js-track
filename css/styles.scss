@@ -1,2 +1,7 @@
 @import "./game/car";
 @import "./game/track";
+
+.save-button {
+  z-index: 999;
+  position: absolute;
+}

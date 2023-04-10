@@ -1,12 +1,17 @@
 import { getMove, getVelocity } from '../helpers/helpers';
+import { state } from '../state/state';
 
 export class Car {
   constructor(key) {
     this.key = key;
     this.element = null;
     this.position = {
-      x: 50,
-      y: 50
+      x: state.getStartPosition().x,
+      y: state.getStartPosition().y
+    };
+    this.prevPosition = {
+      x: state.getStartPosition().x,
+      y: state.getStartPosition().y
     };
     this.weight = 100;
     this.velocity = 0;
@@ -29,30 +34,35 @@ export class Car {
     this.element.style.left = this.position.x + 'px';
   }
 
-  setPosition(x, y) {
+  setPosition(move, track) {
+    const nextPosition = track.getNextPosition(this.position, this.prevPosition, move);
+
+    this.prevPosition.x = this.position.x;
+    this.prevPosition.y = this.position.y;
+
     this.position = {
-      x,
-      y
+      x: nextPosition.x,
+      y: nextPosition.y,
     };
   }
 
-  checkThrottle(isKeyPressed, time) {
+  handleThrottle(isKeyPressed, time, track) {
     if (isKeyPressed) {
-      this.calculatePosition(this.acceleration, time);
+      this.calculatePosition(this.acceleration, time, track);
     } else {
       if (this.velocity > 0) {
-        this.calculatePosition(-this.deceleration, time);
+        this.calculatePosition(-this.deceleration, time, track);
       } else {
         this.velocity = 0;
       }
     }
   }
 
-  calculatePosition(acceleration, time) {
+  calculatePosition(acceleration, time, track) {
     const move = getMove(acceleration, time, this.velocity);
     this.velocity = this.velocity + getVelocity(acceleration, time);
 
-    this.setPosition(this.position.x + move, this.position.y);
+    this.setPosition(move, track);
     this.appendPosition();
   }
 }

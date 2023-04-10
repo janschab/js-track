@@ -27,6 +27,7 @@ export class Game {
     const button = document.createElement('button');
 
     button.innerText = 'Save track';
+    button.classList.add('save-button');
     button.addEventListener('click', () => {
       localStorage.setItem('track', JSON.stringify(track.getCopy()));
     });
