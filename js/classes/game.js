@@ -22,4 +22,15 @@ export class Game {
     this.timeDiff = Date.now() - this.time;
     this.time = Date.now();
   }
+
+  initStorage(track) {
+    const button = document.createElement('button');
+
+    button.innerText = 'Save track';
+    button.addEventListener('click', () => {
+      localStorage.setItem('track', JSON.stringify(track.getCopy()));
+    });
+
+    document.body.appendChild(button);
+  }
 }

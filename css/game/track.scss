@@ -1,0 +1,28 @@
+.track {
+  display: flex;
+  flex-wrap: wrap;
+
+  .track-tile {
+    border-radius: 20px;
+    background-color: #888;
+
+    &--00 {
+      background-image: url("../img/00.png");
+    }
+    &--01 {
+      background-image: url("../img/01.png");
+    }
+    &--12 {
+      background-image: url("../img/12.png");
+    }
+    &--13 {
+      background-image: url("../img/13.png");
+    }
+    &--14 {
+      background-image: url("../img/14.png");
+    }
+    &--15 {
+      background-image: url("../img/15.png");
+    }
+  }
+}
