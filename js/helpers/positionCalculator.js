@@ -17,7 +17,7 @@ export function getNextPosition(position, prevPosition, move, currentTile) {
   let res = {
     x: position.x,
     y: position.y,
-    out: false,
+    out: false
   };
 
   if (currentTile.type === TrackTileType.STRAIGHT) {
@@ -43,6 +43,7 @@ function calculateStraightPosition(currentTile, position, prevPosition, move, re
       x: point.x,
       y: point.y,
       out: false,
+      angle: 0,
     };
   }
   if (currentTile.subtype === TrackTileSubtype.VERTICAL) {
@@ -51,6 +52,7 @@ function calculateStraightPosition(currentTile, position, prevPosition, move, re
       x: point.x,
       y: point.y,
       out: false,
+      angle: 90,
     };
   }
 }
@@ -76,29 +78,29 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
 
   let centerPosition = getCenterPosition(currentTile.subtype);
 
-  let cartesianPosition = {
-    x: relativePosition.x - centerPosition.x,
-    y: -(relativePosition.y - centerPosition.y)
-  };
-  let cartesianPrevPosition = {
-    x: relativePrevPosition.x - centerPosition.x,
-    y: -(relativePrevPosition.y - centerPosition.y)
-  };
+  let cartesianPosition = Point.from(
+    relativePosition.x - centerPosition.x,
+    centerPosition.y - relativePosition.y,
+  );
+  let cartesianPrevPosition = Point.from(
+    relativePrevPosition.x - centerPosition.x,
+    centerPosition.y - relativePrevPosition.y,
+  );
 
   let currentAngle = Math.atan2(cartesianPosition.y, cartesianPosition.x) * 180 / Math.PI;
 
   const firstDegree = currentAngle + getAngle(move, DEFAULT_DIMENSION / 2);
   const secondDegree = currentAngle - getAngle(move, DEFAULT_DIMENSION / 2);
 
-  const firstPoint = {
-    x: Math.cos(degrees2radians(firstDegree)) * 100,
-    y: Math.sin(degrees2radians(firstDegree)) * 100
-  };
+  const firstPoint = Point.from(
+    Math.cos(degrees2radians(firstDegree)) * 100,
+    Math.sin(degrees2radians(firstDegree)) * 100
+  );
 
-  const secondPoint = {
-    x: Math.cos(degrees2radians(secondDegree)) * 100,
-    y: Math.sin(degrees2radians(secondDegree)) * 100
-  };
+  const secondPoint = Point.from(
+    Math.cos(degrees2radians(secondDegree)) * 100,
+    Math.sin(degrees2radians(secondDegree)) * 100
+  );
 
   const point = getFurtherPoint(cartesianPrevPosition, cartesianPosition, firstPoint, secondPoint);
 
@@ -114,9 +116,8 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
     x: (point.x + centerPosition.x) + currentTile.position.x * DEFAULT_DIMENSION,
     y: (-point.y + centerPosition.y) + currentTile.position.y * DEFAULT_DIMENSION,
     out: false,
-    angle: angle,
+    angle: 90 - angle
   };
 
   return res;
-
 }

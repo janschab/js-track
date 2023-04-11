@@ -20,7 +20,7 @@ export class Car {
     this.angle = 0;
 
     this.init();
-    this.appendPosition();
+    this.drawCar();
   }
 
   init() {
@@ -29,9 +29,10 @@ export class Car {
     document.body.appendChild(this.element);
   }
 
-  appendPosition() {
+  drawCar() {
     this.element.style.top = this.position.y + 'px';
     this.element.style.left = this.position.x + 'px';
+    this.element.style.rotate = this.angle + 'deg';
   }
 
   /**
@@ -48,6 +49,8 @@ export class Car {
       x: nextPosition.x,
       y: nextPosition.y,
     };
+
+    this.angle = nextPosition.angle;
   }
 
   handleThrottle(isKeyPressed, time, track) {
@@ -67,6 +70,6 @@ export class Car {
     this.velocity = this.velocity + getVelocity(acceleration, time);
 
     this.setPosition(move, track);
-    this.appendPosition();
+    this.drawCar();
   }
 }

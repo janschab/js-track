@@ -4,6 +4,12 @@ export class Point {
     this.y = y;
   }
 
+  /**
+   * @static
+   * @param {number} x
+   * @param {number} y
+   * @return {Point}
+   */
   static from(x, y) {
     return new Point(x, y);
   }
