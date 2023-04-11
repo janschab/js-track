@@ -1,5 +1,5 @@
 import { Point } from '../classes/point';
-import { DEFAULT_DIMENSION } from '../constants/constants';
+import { DEFAULT_DIMENSION, RADIUS } from '../constants/constants';
 import { TrackTileSubtype, TrackTileType } from '../types/enum';
 import { degrees2radians, getAngle, getCenterPosition, getFurtherPoint, getFurtherPointFromMove } from './helpers';
 
@@ -118,17 +118,17 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
 
   let currentAngle = Math.atan2(cartesianPosition.y, cartesianPosition.x) * 180 / Math.PI;
 
-  const firstDegree = currentAngle + getAngle(move, DEFAULT_DIMENSION / 2);
-  const secondDegree = currentAngle - getAngle(move, DEFAULT_DIMENSION / 2);
+  const firstDegree = currentAngle + getAngle(move, RADIUS);
+  const secondDegree = currentAngle - getAngle(move, RADIUS);
 
   const firstPoint = Point.from(
-    Math.cos(degrees2radians(firstDegree)) * 100,
-    Math.sin(degrees2radians(firstDegree)) * 100
+    Math.cos(degrees2radians(firstDegree)) * RADIUS,
+    Math.sin(degrees2radians(firstDegree)) * RADIUS
   );
 
   const secondPoint = Point.from(
-    Math.cos(degrees2radians(secondDegree)) * 100,
-    Math.sin(degrees2radians(secondDegree)) * 100
+    Math.cos(degrees2radians(secondDegree)) * RADIUS,
+    Math.sin(degrees2radians(secondDegree)) * RADIUS
   );
 
   const point = getFurtherPoint(cartesianPrevPosition, cartesianPosition, firstPoint, secondPoint);

@@ -18,6 +18,7 @@ export class Car {
     this.isSlipping = false;
 
     this.weight = 100;
+    this.stiction = calculateStiction(this.weight);
     this.velocity = 0;
     this.acceleration = 0.0007;
     this.deceleration = 0.0012;
@@ -37,6 +38,10 @@ export class Car {
     this.element.style.top = this.position.y + 'px';
     this.element.style.left = this.position.x + 'px';
     this.element.style.rotate = this.angle + 'deg';
+
+    const color = 135 + (Math.max(this.stictionDelta, 0) * 100 / this.stiction);
+
+    this.element.style.setProperty('--car-color', `rgb(235, ${color}, ${color})`);
   }
 
   /**
@@ -84,8 +89,9 @@ export class Car {
     const move = getMove(acceleration, time, this.velocity);
     const nextPosition = getNextPosition(this.position, this.prevPosition, move, track.getTileFromPosition(this.position), false);
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
-    const stiction = calculateStiction(this.weight);
-    const isSlipping = centrifugalForce > stiction;
+
+    this.stictionDelta = this.stiction - centrifugalForce;
+    const isSlipping = this.stictionDelta < 0;
 
     if (isSlipping) {
       this.handleSlipping(time);
