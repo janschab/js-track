@@ -121,8 +121,6 @@ export class Track {
           x: move,
           y: 0
         });
-      console.log('position', position);
-      console.log('prevPosition', prevPosition);
       return res;
     }
     if (currentTile.subtype === TrackTileSubtype.VERTICAL) {
@@ -144,92 +142,46 @@ export class Track {
       x: position.x - currentTile.position.x * DEFAULT_DIMENSION,
       y: position.y - currentTile.position.y * DEFAULT_DIMENSION
     };
-    // console.log('relativePosition', relativePosition);
+
     const relativePrevPosition = {
       x: prevPosition.x - currentTile.position.x * DEFAULT_DIMENSION,
       y: prevPosition.y - currentTile.position.y * DEFAULT_DIMENSION
     };
-    // console.log('relativePrevPosition', relativePrevPosition);
 
     let centerPosition = getCenterPosition(currentTile.subtype);
 
-    let zeroPosition = {
+    let cartesianPosition = {
       x: relativePosition.x - centerPosition.x,
       y: -(relativePosition.y - centerPosition.y)
     };
+    let cartesianPrevPosition = {
+      x: relativePrevPosition.x - centerPosition.x,
+      y: -(relativePrevPosition.y - centerPosition.y)
+    };
 
-    let center = document.createElement('div');
-    center.style.width = '10px';
-    center.style.height = '10px';
-    center.id = 'center';
-    center.style.top = centerPosition.y + 'px';
-    center.style.left = centerPosition.x + 'px';
-    center.style.position = 'absolute';
-    center.style.background = 'red';
-    currentTile.element.appendChild(center);
-
-    let element = document.createElement('div');
-    element.style.width = '10px';
-    element.style.height = '10px';
-    element.style.top = zeroPosition.y + 'px';
-    element.style.left = zeroPosition.x + 'px';
-    element.style.position = 'absolute';
-    element.style.background = 'red';
-    element.style.zIndex = '99';
-    center.appendChild(element);
-
-    // console.log('zeroPosition', zeroPosition);
-
-    // let contactPointX = Math.sqrt(((DEFAULT_DIMENSION / 2) ** 2) / (1 + ((zeroPosition.x / zeroPosition.y) ** 2)));
-    // let contactPointY = zeroPosition.x * contactPointX / zeroPosition.y;
-    //
-    // let contactPoint = {
-    //   x: contactPointX,
-    //   y: contactPointY,
-    // }
-
-    let currentAngle = Math.atan(zeroPosition.x / zeroPosition.y) * 180 / Math.PI;
-    if (zeroPosition.x > 0) {
-      if (zeroPosition.y < 0) {
-        currentAngle += 180;
-      }
-    }
-    if (zeroPosition.x <= 0) {
-      if (zeroPosition.y < 0) {
-        currentAngle = -currentAngle + 180;
-      }
-    }
-    console.log(currentAngle);
+    let currentAngle = Math.atan2(cartesianPosition.y, cartesianPosition.x) * 180 / Math.PI;
 
     const firstDegree = currentAngle + getAngle(move, DEFAULT_DIMENSION / 2);
     const secondDegree = currentAngle - getAngle(move, DEFAULT_DIMENSION / 2);
 
     const firstPoint = {
-      x: Math.sin(degrees2radians(firstDegree)) * 100,
-      y: Math.cos(degrees2radians(firstDegree)) * 100
+      x: Math.cos(degrees2radians(firstDegree)) * 100,
+      y: Math.sin(degrees2radians(firstDegree)) * 100
     };
-    // console.log('firstPoint', firstPoint);
 
     const secondPoint = {
-      x: Math.sin(degrees2radians(secondDegree)) * 100,
-      y: Math.cos(degrees2radians(secondDegree)) * 100
+      x: Math.cos(degrees2radians(secondDegree)) * 100,
+      y: Math.sin(degrees2radians(secondDegree)) * 100
     };
-    const point = getFurtherPoint(relativePrevPosition, relativePosition, firstPoint, secondPoint);
 
-    if (zeroPosition.x <= 0) {
-      if (zeroPosition.y < 0) {
-        point.x = -point.x;
-      }
-    }
+    const point = getFurtherPoint(cartesianPrevPosition, cartesianPosition, firstPoint, secondPoint);
 
-    // console.log('point', point);
-    const resPoint = {
-      x: point.x + currentTile.position.x * DEFAULT_DIMENSION,
+    res = {
+      x: (point.x + centerPosition.x) + currentTile.position.x * DEFAULT_DIMENSION,
       y: (-point.y + centerPosition.y) + currentTile.position.y * DEFAULT_DIMENSION,
     };
 
-    // console.log(resPoint);
-    return resPoint;
+    return res;
 
   }
 }

@@ -7,8 +7,15 @@ class State {
      * @type {{x: number, y: number}}
      */
     this.startTile = {
-      x: 2,
+      x: 0,
       y: 0,
+    }
+    /**
+     * @type {{x: number, y: number}}
+     */
+    this.size = {
+      x: 8,
+      y: 3,
     }
   }
 

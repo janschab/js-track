@@ -30,8 +30,7 @@ export function getFurtherPoint(prevPoint, point, firstPoint, secondPoint) {
 
   firstDistance = Math.sqrt(Math.pow(firstPoint.x - prevPoint.x, 2) + Math.pow(firstPoint.y - prevPoint.y, 2));
   secondDistance = Math.sqrt(Math.pow(secondPoint.x - prevPoint.x, 2) + Math.pow(secondPoint.y - prevPoint.y, 2));
-  console.log('firstDistance', firstDistance, firstPoint);
-  console.log('secondDistance', secondDistance, secondPoint);
+
   if (firstDistance > secondDistance) {
     return firstPoint;
   } else {

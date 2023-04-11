@@ -2,8 +2,9 @@ import { getMove, getVelocity } from '../helpers/helpers';
 import { state } from '../state/state';
 
 export class Car {
-  constructor(key) {
+  constructor(key, reverseKey) {
     this.key = key;
+    this.reverseKey = reverseKey;
     this.element = null;
     this.position = {
       x: state.getStartPosition().x,
@@ -15,8 +16,8 @@ export class Car {
     };
     this.weight = 100;
     this.velocity = 0;
-    this.acceleration = 0.0005;
-    this.deceleration = 0.0009;
+    this.acceleration = 0.0007;
+    this.deceleration = 0.0012;
     this.angle = 0;
 
     this.init();

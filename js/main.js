@@ -12,9 +12,9 @@ try {
 
 const game = new Game();
 
-const track = fromStorage ? Track.fromStorage(fromStorage) : Track.fromDefaults(4, 2);
+const track = fromStorage ? Track.fromStorage(fromStorage) : Track.fromDefaults(state.size.x, state.size.y);
 
-const car = new Car('f');
+const car = new Car('f', 'd');
 
 
 game.initStorage(track);
@@ -23,7 +23,7 @@ const fc = () => {
   requestAnimationFrame(() => {
     game.tick();
 
-    car.handleThrottle(game.getKey(car.key), game.timeDiff, track);
+    car.handleThrottle(game.getKey(car.key), game.timeDiff, track, game.getKey(car.reverseKey));
 
     fc();
   });
