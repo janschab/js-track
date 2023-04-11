@@ -13,4 +13,13 @@ export class Point {
   static from(x, y) {
     return new Point(x, y);
   }
+
+  /**
+   * @static
+   * @param {Point} point
+   * @return {Point}
+   */
+  static copy(point) {
+    return new Point(point.x, point.y);
+  }
 }

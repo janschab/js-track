@@ -1,1 +1,2 @@
 export const DEFAULT_DIMENSION = 200;
+export const SLIPPING_DECELERATION = -0.0015;

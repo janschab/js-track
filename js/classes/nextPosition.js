@@ -1,9 +1,9 @@
 import { Point } from './point';
 
 export class NextPosition extends Point{
-  constructor(x, y, out, angle) {
+  constructor(x, y, angle, deltaAngle) {
     super(x, y);
-    this.out = out;
+    this.deltaAngle = deltaAngle;
     this.angle = angle;
   }
 }

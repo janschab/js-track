@@ -8,23 +8,52 @@ import { degrees2radians, getAngle, getCenterPosition, getFurtherPoint, getFurth
  * @param {{x: number, y: number}} prevPosition
  * @param {number} move
  * @param {TrackTile} currentTile
+ * @param {boolean} isSlipping
  * @return {NextPosition}
  */
-export function getNextPosition(position, prevPosition, move, currentTile) {
+export function getNextPosition(position, prevPosition, move, currentTile, isSlipping) {
   /**
    * @type {NextPosition}
    */
   let res = {
     x: position.x,
     y: position.y,
-    out: false
+    angle: 0,
+    deltaAngle: 0
   };
+
+  if (isSlipping) {
+    return calculateSlippingPosition(position, prevPosition, move, res);
+  }
 
   if (currentTile.type === TrackTileType.STRAIGHT) {
     return calculateStraightPosition(currentTile, position, prevPosition, move, res);
   } else {
     return calculateTurnPosition(currentTile, position, prevPosition, move, res);
   }
+}
+
+/**
+ * @param {Point} position
+ * @param {Point} prevPosition
+ * @param {number} move
+ * @param {NextPosition} res
+ * @return {NextPosition}
+ */
+function calculateSlippingPosition(position, prevPosition, move, res) {
+  let delta = Point.from(position.x - prevPosition.x, position.y - prevPosition.y);
+  let angle = Math.atan2(delta.y, delta.x);
+  let x = Math.cos(angle) * move;
+  let y = Math.sin(angle) * move;
+
+  let point = getFurtherPointFromMove(prevPosition, position, Point.from(x, y));
+
+  return {
+    x: point.x,
+    y: point.y,
+    deltaAngle: 0,
+    angle: 0
+  };
 }
 
 /**
@@ -42,8 +71,8 @@ function calculateStraightPosition(currentTile, position, prevPosition, move, re
     return {
       x: point.x,
       y: point.y,
-      out: false,
-      angle: 0,
+      deltaAngle: 0,
+      angle: 0
     };
   }
   if (currentTile.subtype === TrackTileSubtype.VERTICAL) {
@@ -51,8 +80,8 @@ function calculateStraightPosition(currentTile, position, prevPosition, move, re
     return {
       x: point.x,
       y: point.y,
-      out: false,
-      angle: 90,
+      deltaAngle: 0,
+      angle: 90
     };
   }
 }
@@ -80,11 +109,11 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
 
   let cartesianPosition = Point.from(
     relativePosition.x - centerPosition.x,
-    centerPosition.y - relativePosition.y,
+    centerPosition.y - relativePosition.y
   );
   let cartesianPrevPosition = Point.from(
     relativePrevPosition.x - centerPosition.x,
-    centerPosition.y - relativePrevPosition.y,
+    centerPosition.y - relativePrevPosition.y
   );
 
   let currentAngle = Math.atan2(cartesianPosition.y, cartesianPosition.x) * 180 / Math.PI;
@@ -115,7 +144,7 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
   res = {
     x: (point.x + centerPosition.x) + currentTile.position.x * DEFAULT_DIMENSION,
     y: (-point.y + centerPosition.y) + currentTile.position.y * DEFAULT_DIMENSION,
-    out: false,
+    deltaAngle: Math.abs(currentAngle - angle),
     angle: 90 - angle
   };
 

@@ -1,4 +1,5 @@
-import { getMove, getVelocity } from '../helpers/helpers';
+import { SLIPPING_DECELERATION } from '../constants/constants';
+import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } from '../helpers/helpers';
 import { getNextPosition } from '../helpers/positionCalculator';
 import { state } from '../state/state';
 import { Point } from './point';
@@ -12,6 +13,9 @@ export class Car {
     this.position = new Point(state.getStartPosition().x, state.getStartPosition().y);
     this.prevPosition = new Point(state.getStartPosition().x, state.getStartPosition().y);
     this.outPosition = null;
+    this.outPrevPosition = null;
+
+    this.isSlipping = false;
 
     this.weight = 100;
     this.velocity = 0;
@@ -36,11 +40,9 @@ export class Car {
   }
 
   /**
-   * @param {number} move
-   * @param {Track} track
+   * @param {NextPosition} nextPosition
    */
-  setPosition(move, track) {
-    const nextPosition = getNextPosition(this.position, this.prevPosition, move, track.getTileFromPosition(this.position));
+  setPosition(nextPosition) {
 
     this.prevPosition.x = this.position.x;
     this.prevPosition.y = this.position.y;
@@ -54,6 +56,19 @@ export class Car {
   }
 
   handleThrottle(isKeyPressed, time, track) {
+    if (this.isSlipping) {
+      if (this.velocity <= 0) {
+        this.isSlipping = false;
+        this.position = Point.copy(this.outPosition);
+        this.prevPosition = Point.copy(this.outPrevPosition);
+        this.outPosition = null;
+        this.outPrevPosition = null;
+        isKeyPressed = true;
+      } else {
+        this.calculateSlippingPosition(time);
+        return;
+      }
+    }
     if (isKeyPressed) {
       this.calculatePosition(this.acceleration, time, track);
     } else {
@@ -67,9 +82,37 @@ export class Car {
 
   calculatePosition(acceleration, time, track) {
     const move = getMove(acceleration, time, this.velocity);
-    this.velocity = this.velocity + getVelocity(acceleration, time);
+    const nextPosition = getNextPosition(this.position, this.prevPosition, move, track.getTileFromPosition(this.position), false);
+    const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
+    const stiction = calculateStiction(this.weight);
+    const isSlipping = centrifugalForce > stiction;
 
-    this.setPosition(move, track);
+    if (isSlipping) {
+      this.handleSlipping(time);
+      return;
+    }
+
+    this.velocity += getVelocity(acceleration, time);
+    this.setPosition(nextPosition);
+    this.drawCar();
+  }
+
+  handleSlipping(time) {
+    this.isSlipping = true;
+    this.outPosition = Point.copy(this.position);
+    this.outPrevPosition = Point.copy(this.prevPosition);
+
+    this.calculateSlippingPosition(time)
+  }
+
+  calculateSlippingPosition(time) {
+    const move = getMove(SLIPPING_DECELERATION, time, this.velocity);
+    const nextPosition = getNextPosition(this.position, this.prevPosition, move, null, true);
+    nextPosition.angle = this.angle;
+
+    this.velocity += getVelocity(SLIPPING_DECELERATION, time);
+
+    this.setPosition(nextPosition);
     this.drawCar();
   }
 }

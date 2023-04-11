@@ -1,3 +1,4 @@
+import { DEFAULT_DIMENSION } from '../constants/constants';
 import { TrackTileSubtype } from '../types/enum';
 
 export function getVelocity(a, t) {
@@ -86,4 +87,12 @@ export function getCenterPosition(subtype) {
 
 export function degrees2radians(degrees) {
   return degrees * (Math.PI / 180);
+}
+
+export function calculateCentrifugalForce(deltaAngle, time, weight) {
+  return weight * ((deltaAngle / time) ** 2) * (DEFAULT_DIMENSION / 2);
+}
+
+export function calculateStiction(weight) {
+  return weight * 10;
 }
