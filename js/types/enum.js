@@ -19,3 +19,12 @@ export const TrackTileSubtype = {
   SW: 4,
   NW: 5,
 }
+
+/**
+ * @readonly
+ * @enum {{OPPOSITE: number, NORMAL: number}}
+ */
+export const Direction = {
+  NORMAL: 1,
+  OPPOSITE: -1,
+}

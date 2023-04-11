@@ -24,12 +24,22 @@ export class Game {
   }
 
   initStorage(track) {
-    const button = document.createElement('button');
+    let button = document.createElement('button');
 
     button.innerText = 'Save track';
     button.classList.add('save-button');
     button.addEventListener('click', () => {
       localStorage.setItem('track', JSON.stringify(track.getCopy()));
+    });
+
+    document.body.appendChild(button);
+
+    button = document.createElement('button');
+
+    button.innerText = 'Reset';
+    button.classList.add('reset-button');
+    button.addEventListener('click', () => {
+      localStorage.removeItem('track');
     });
 
     document.body.appendChild(button);

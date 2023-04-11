@@ -1,4 +1,5 @@
-import { DEFAULT_DIMENSION, RADIUS } from '../constants/constants';
+import { DEFAULT_DIMENSION, DEFAULT_X_SIZE, DEFAULT_Y_SIZE, RADIUS } from '../constants/constants';
+import { Direction } from '../types/enum';
 
 class State {
   constructor() {
@@ -9,14 +10,18 @@ class State {
     this.startTile = {
       x: 0,
       y: 0,
-    }
+    };
+    /**
+     * @type {Direction}
+     */
+    this.direction = Direction.NORMAL;
     /**
      * @type {{x: number, y: number}}
      */
     this.size = {
-      x: 8,
-      y: 4,
-    }
+      x: DEFAULT_X_SIZE,
+      y: DEFAULT_Y_SIZE,
+    };
   }
 
   setStartTile(x, y) {

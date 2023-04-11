@@ -1,4 +1,5 @@
 import { DEFAULT_DIMENSION } from '../constants/constants';
+import { state } from '../state/state';
 import { TrackTileSubtype, TrackTileType } from '../types/enum';
 
 export class TrackTile {

@@ -1,4 +1,4 @@
-import { RADIUS } from '../constants/constants';
+import { DEFAULT_DIMENSION, RADIUS, STICTION_FACTOR } from '../constants/constants';
 import { TrackTileSubtype } from '../types/enum';
 
 export function getVelocity(a, t) {
@@ -60,20 +60,20 @@ export function getCenterPosition(subtype) {
   switch (subtype) {
     case TrackTileSubtype.NE: {
       return {
-        x: 200,
+        x: DEFAULT_DIMENSION,
         y: 0
       };
     }
     case TrackTileSubtype.SE: {
       return {
-        x: 200,
-        y: 200
+        x: DEFAULT_DIMENSION,
+        y: DEFAULT_DIMENSION
       };
     }
     case TrackTileSubtype.SW: {
       return {
         x: 0,
-        y: 200
+        y: DEFAULT_DIMENSION
       };
     }
     case TrackTileSubtype.NW: {
@@ -94,5 +94,5 @@ export function calculateCentrifugalForce(deltaAngle, time, weight) {
 }
 
 export function calculateStiction(weight) {
-  return weight * 10;
+  return weight * STICTION_FACTOR;
 }

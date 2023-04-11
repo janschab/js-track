@@ -5,7 +5,7 @@ import { state } from '../state/state';
 import { Point } from './point';
 
 export class Car {
-  constructor(key, reverseKey) {
+  constructor(key, reverseKey, color) {
     this.key = key;
     this.reverseKey = reverseKey;
     this.element = null;
@@ -21,8 +21,9 @@ export class Car {
     this.stiction = calculateStiction(this.weight);
     this.velocity = 0;
     this.acceleration = 0.0007;
-    this.deceleration = 0.0012;
+    this.deceleration = 0.0014;
     this.angle = 0;
+    this.color = color;
 
     this.init();
     this.drawCar();
@@ -31,6 +32,7 @@ export class Car {
   init() {
     this.element = document.createElement('div');
     this.element.classList.add('car');
+    this.element.style.setProperty('--car-color', this.color);
     document.body.appendChild(this.element);
   }
 
@@ -38,10 +40,6 @@ export class Car {
     this.element.style.top = this.position.y + 'px';
     this.element.style.left = this.position.x + 'px';
     this.element.style.rotate = this.angle + 'deg';
-
-    const color = 135 + (Math.max(this.stictionDelta, 0) * 100 / this.stiction);
-
-    this.element.style.setProperty('--car-color', `rgb(235, ${color}, ${color})`);
   }
 
   /**
