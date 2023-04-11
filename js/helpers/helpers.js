@@ -12,6 +12,12 @@ export function getAngle(s, r) {
   return (s * 180) / (Math.PI * r);
 }
 
+/**
+ * @param {Point} prevPoint
+ * @param {Point} point
+ * @param {Point} move
+ * @return {Point}
+ */
 export function getFurtherPointFromMove(prevPoint, point, move) {
   let firstPoint = {
     x: point.x - move.x,
@@ -24,6 +30,13 @@ export function getFurtherPointFromMove(prevPoint, point, move) {
   return getFurtherPoint(prevPoint, point, firstPoint, secondPoint);
 }
 
+/**
+ * @param {Point} prevPoint
+ * @param {Point} point
+ * @param {Point} firstPoint
+ * @param {Point} secondPoint
+ * @return {Point}
+ */
 export function getFurtherPoint(prevPoint, point, firstPoint, secondPoint) {
   let firstDistance;
   let secondDistance;
@@ -38,6 +51,10 @@ export function getFurtherPoint(prevPoint, point, firstPoint, secondPoint) {
   }
 }
 
+/**
+ * @param {TrackTileSubtype} subtype
+ * @return {Point}
+ */
 export function getCenterPosition(subtype) {
   switch (subtype) {
     case TrackTileSubtype.NE: {

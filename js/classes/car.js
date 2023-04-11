@@ -1,19 +1,18 @@
 import { getMove, getVelocity } from '../helpers/helpers';
+import { getNextPosition } from '../helpers/positionCalculator';
 import { state } from '../state/state';
+import { Point } from './point';
 
 export class Car {
   constructor(key, reverseKey) {
     this.key = key;
     this.reverseKey = reverseKey;
     this.element = null;
-    this.position = {
-      x: state.getStartPosition().x,
-      y: state.getStartPosition().y
-    };
-    this.prevPosition = {
-      x: state.getStartPosition().x,
-      y: state.getStartPosition().y
-    };
+
+    this.position = new Point(state.getStartPosition().x, state.getStartPosition().y);
+    this.prevPosition = new Point(state.getStartPosition().x, state.getStartPosition().y);
+    this.outPosition = null;
+
     this.weight = 100;
     this.velocity = 0;
     this.acceleration = 0.0007;
@@ -35,8 +34,12 @@ export class Car {
     this.element.style.left = this.position.x + 'px';
   }
 
+  /**
+   * @param {number} move
+   * @param {Track} track
+   */
   setPosition(move, track) {
-    const nextPosition = track.getNextPosition(this.position, this.prevPosition, move);
+    const nextPosition = getNextPosition(this.position, this.prevPosition, move, track.getTileFromPosition(this.position));
 
     this.prevPosition.x = this.position.x;
     this.prevPosition.y = this.position.y;
