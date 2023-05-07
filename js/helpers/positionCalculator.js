@@ -4,8 +4,8 @@ import { TrackTileSubtype, TrackTileType } from '../types/enum';
 import { degrees2radians, getAngle, getCenterPosition, getFurtherPoint, getFurtherPointFromMove } from './helpers';
 
 /**
- * @param {{x: number, y: number}} position
- * @param {{x: number, y: number}} prevPosition
+ * @param {Point} position
+ * @param {Point} prevPosition
  * @param {number} move
  * @param {TrackTile} currentTile
  * @param {boolean} isSlipping
@@ -27,9 +27,9 @@ export function getNextPosition(position, prevPosition, move, currentTile, isSli
   }
 
   if (currentTile.type === TrackTileType.STRAIGHT) {
-    return calculateStraightPosition(currentTile, position, prevPosition, move, res);
+    return calculateStraightPosition(currentTile, position, currentTile.startCoordinates, move, res);
   } else {
-    return calculateTurnPosition(currentTile, position, prevPosition, move, res);
+    return calculateTurnPosition(currentTile, position, currentTile.startCoordinates, move, res);
   }
 }
 
@@ -130,8 +130,7 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
     Math.cos(degrees2radians(secondDegree)) * RADIUS,
     Math.sin(degrees2radians(secondDegree)) * RADIUS
   );
-
-  const point = getFurtherPoint(cartesianPrevPosition, cartesianPosition, firstPoint, secondPoint);
+  const point = getFurtherPoint(cartesianPrevPosition, firstPoint, secondPoint);
 
   let angle;
 
@@ -149,4 +148,13 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
   };
 
   return res;
+}
+
+/**
+ * @param {Point} position
+ * @param {Point} relativePoint
+ * @return {Point}
+ */
+export function getCoordinatesFromPositionAndRelativePoint(position, relativePoint) {
+  return Point.from(position.x * DEFAULT_DIMENSION + relativePoint.x, position.y * DEFAULT_DIMENSION + relativePoint.y);
 }

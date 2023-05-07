@@ -1,3 +1,4 @@
+import { Duration } from 'luxon';
 import { SLIPPING_DECELERATION } from '../constants/constants';
 import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } from '../helpers/helpers';
 import { getNextPosition } from '../helpers/positionCalculator';
@@ -10,8 +11,8 @@ export class Car {
     this.reverseKey = reverseKey;
     this.element = null;
 
-    this.position = new Point(state.getStartPosition().x, state.getStartPosition().y);
-    this.prevPosition = new Point(state.getStartPosition().x, state.getStartPosition().y);
+    this.coordinates = new Point(state.getStartPosition().x, state.getStartPosition().y);
+    this.prevCoordinates = new Point(state.getStartPosition().x, state.getStartPosition().y);
     this.outPosition = null;
     this.outPrevPosition = null;
 
@@ -25,6 +26,12 @@ export class Car {
     this.angle = 0;
     this.color = color;
 
+    this.roundTimestamps = [];
+    /**
+     * @type {TrackTile | null}
+     */
+    this.prevTile = null;
+
     this.init();
     this.drawCar();
   }
@@ -34,11 +41,13 @@ export class Car {
     this.element.classList.add('car');
     this.element.style.setProperty('--car-color', this.color);
     document.body.appendChild(this.element);
+
+    this.initTimeDisplay();
   }
 
   drawCar() {
-    this.element.style.top = this.position.y + 'px';
-    this.element.style.left = this.position.x + 'px';
+    this.element.style.top = this.coordinates.y + 'px';
+    this.element.style.left = this.coordinates.x + 'px';
     this.element.style.rotate = this.angle + 'deg';
   }
 
@@ -47,12 +56,12 @@ export class Car {
    */
   setPosition(nextPosition) {
 
-    this.prevPosition.x = this.position.x;
-    this.prevPosition.y = this.position.y;
+    this.prevCoordinates.x = this.coordinates.x;
+    this.prevCoordinates.y = this.coordinates.y;
 
-    this.position = {
+    this.coordinates = {
       x: nextPosition.x,
-      y: nextPosition.y,
+      y: nextPosition.y
     };
 
     this.angle = nextPosition.angle;
@@ -62,8 +71,8 @@ export class Car {
     if (this.isSlipping) {
       if (this.velocity <= 0) {
         this.isSlipping = false;
-        this.position = Point.copy(this.outPosition);
-        this.prevPosition = Point.copy(this.outPrevPosition);
+        this.coordinates = Point.copy(this.outPosition);
+        this.prevCoordinates = Point.copy(this.outPrevPosition);
         this.outPosition = null;
         this.outPrevPosition = null;
         isKeyPressed = true;
@@ -81,11 +90,13 @@ export class Car {
         this.velocity = 0;
       }
     }
+    this.time(track);
   }
 
   calculatePosition(acceleration, time, track) {
     const move = getMove(acceleration, time, this.velocity);
-    const nextPosition = getNextPosition(this.position, this.prevPosition, move, track.getTileFromPosition(this.position), false);
+    const nextPosition = getNextPosition(this.coordinates, this.prevCoordinates, move, track.getTileFromCoordinates(this.coordinates),
+      false);
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
 
     this.stictionDelta = this.stiction - centrifugalForce;
@@ -103,20 +114,65 @@ export class Car {
 
   handleSlipping(time) {
     this.isSlipping = true;
-    this.outPosition = Point.copy(this.position);
-    this.outPrevPosition = Point.copy(this.prevPosition);
+    this.outPosition = Point.copy(this.coordinates);
+    this.outPrevPosition = Point.copy(this.prevCoordinates);
 
-    this.calculateSlippingPosition(time)
+    this.calculateSlippingPosition(time);
   }
 
   calculateSlippingPosition(time) {
     const move = getMove(SLIPPING_DECELERATION, time, this.velocity);
-    const nextPosition = getNextPosition(this.position, this.prevPosition, move, null, true);
+    const nextPosition = getNextPosition(this.coordinates, this.prevCoordinates, move, null, true);
     nextPosition.angle = this.angle;
 
     this.velocity += getVelocity(SLIPPING_DECELERATION, time);
 
     this.setPosition(nextPosition);
     this.drawCar();
+  }
+
+  /**
+   * @param {Track} track
+   */
+  time(track) {
+    const tile = track.getTileFromCoordinates(this.coordinates);
+
+    if (tile.isStartTile()) {
+      this.prevTile = tile;
+    } else {
+      if (this.prevTile && this.prevTile.isStartTile()) {
+        this.roundTimestamps.push(Date.now());
+      }
+      this.prevTile = null;
+    }
+
+    this.drawTimes();
+  }
+
+  initTimeDisplay() {
+    this.timeDisplayElement = document.createElement('div');
+    this.timeDisplayElement.className = 'time-display';
+
+    document.body.appendChild(this.timeDisplayElement);
+  }
+
+  drawTimes() {
+    let text = '';
+
+    if (this.roundTimestamps.length) {
+      text += Duration.fromMillis(Date.now() - this.roundTimestamps[this.roundTimestamps.length - 1]).toFormat('s.S');
+      text += '<br>';
+    }
+
+    if (this.roundTimestamps.length > 1) {
+      [...this.roundTimestamps].reverse().forEach((time, index, array) => {
+        if (index > 0) {
+          text += (array.length - index) + ': ' + Duration.fromMillis(array[index - 1] - time).toFormat('s.S');
+          text += '<br>';
+        }
+      });
+    }
+
+    this.timeDisplayElement.innerHTML = text;
   }
 }

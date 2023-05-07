@@ -22,4 +22,12 @@ export class Point {
   static copy(point) {
     return new Point(point.x, point.y);
   }
+
+  /**
+   * @param {Point} point
+   * @return {boolean}
+   */
+  equals(point) {
+    return this.x === point.x && this.y === point.y;
+  }
 }

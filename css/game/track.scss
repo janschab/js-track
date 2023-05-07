@@ -26,3 +26,23 @@
     }
   }
 }
+
+.start-point {
+  width: 10px;
+  height: 10px;
+  background-color: red;
+  position: absolute;
+  z-index: 999999;
+  transform: translate(-5px, -5px);
+  border-radius: 50%;
+}
+
+.end-point {
+  width: 10px;
+  height: 10px;
+  background-color: #0048ff;
+  position: absolute;
+  z-index: 999999;
+  transform: translate(-5px, -5px);
+  border-radius: 50%;
+}

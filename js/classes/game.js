@@ -1,3 +1,5 @@
+import { state } from '../state/state';
+
 export class Game {
   constructor() {
     this.keys = {};
@@ -40,6 +42,16 @@ export class Game {
     button.classList.add('reset-button');
     button.addEventListener('click', () => {
       localStorage.removeItem('track');
+    });
+
+    document.body.appendChild(button);
+
+    button = document.createElement('button');
+
+    button.innerText = 'Set start and direction';
+    button.classList.add('start-button');
+    button.addEventListener('click', () => {
+      state.toggleDirectionMode()
     });
 
     document.body.appendChild(button);

@@ -28,17 +28,16 @@ export function getFurtherPointFromMove(prevPoint, point, move) {
     x: point.x + move.x,
     y: point.y + move.y
   };
-  return getFurtherPoint(prevPoint, point, firstPoint, secondPoint);
+  return getFurtherPoint(prevPoint, firstPoint, secondPoint);
 }
 
 /**
  * @param {Point} prevPoint
- * @param {Point} point
  * @param {Point} firstPoint
  * @param {Point} secondPoint
  * @return {Point}
  */
-export function getFurtherPoint(prevPoint, point, firstPoint, secondPoint) {
+export function getFurtherPoint(prevPoint, firstPoint, secondPoint) {
   let firstDistance;
   let secondDistance;
 
