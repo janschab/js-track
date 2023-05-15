@@ -1,8 +1,8 @@
 {
-  "name": " ",
+  "name": "tor",
   "version": "0.0.1",
   "description": "",
-  "keywords": "",
+  "keywords": ["game", "tor"],
   "license": "",
   "author": "",
   "scripts": {

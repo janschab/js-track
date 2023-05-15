@@ -1,5 +1,6 @@
 import { Duration } from 'luxon';
 import { SLIPPING_DECELERATION } from '../constants/constants';
+import { createElement } from '../helpers/$';
 import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } from '../helpers/helpers';
 import { getNextPosition } from '../helpers/positionCalculator';
 import { state } from '../state/state';
@@ -68,6 +69,8 @@ export class Car {
   }
 
   handleThrottle(isKeyPressed, time, track) {
+    this.time(track);
+
     if (this.isSlipping) {
       if (this.velocity <= 0) {
         this.isSlipping = false;
@@ -90,7 +93,6 @@ export class Car {
         this.velocity = 0;
       }
     }
-    this.time(track);
   }
 
   calculatePosition(acceleration, time, track) {
@@ -137,7 +139,7 @@ export class Car {
   time(track) {
     const tile = track.getTileFromCoordinates(this.coordinates);
 
-    if (tile.isStartTile()) {
+    if (tile && tile.isStartTile()) {
       this.prevTile = tile;
     } else {
       if (this.prevTile && this.prevTile.isStartTile()) {
@@ -150,17 +152,15 @@ export class Car {
   }
 
   initTimeDisplay() {
-    this.timeDisplayElement = document.createElement('div');
-    this.timeDisplayElement.className = 'time-display';
-
-    document.body.appendChild(this.timeDisplayElement);
+    this.timeDisplayElement = createElement('div', document.querySelector('.time-wrapper'), 'time-display');
   }
 
   drawTimes() {
     let text = '';
 
     if (this.roundTimestamps.length) {
-      text += Duration.fromMillis(Date.now() - this.roundTimestamps[this.roundTimestamps.length - 1]).toFormat('s.S');
+      text += `<b style="color:${this.color}">${Duration.fromMillis(Date.now() - this.roundTimestamps[this.roundTimestamps.length - 1])
+        .toFormat('s.S')}</b>`;
       text += '<br>';
     }
 

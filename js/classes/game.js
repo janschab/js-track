@@ -1,3 +1,4 @@
+import { createElement } from '../helpers/$';
 import { state } from '../state/state';
 
 export class Game {
@@ -6,7 +7,6 @@ export class Game {
 
     this.time = Date.now();
     this.timeDiff = 1000;
-
 
     document.body.addEventListener('keydown', (e) => {
       this.keys[e.key] = true;
@@ -26,34 +26,24 @@ export class Game {
   }
 
   initStorage(track) {
-    let button = document.createElement('button');
-
-    button.innerText = 'Save track';
-    button.classList.add('save-button');
-    button.addEventListener('click', () => {
+    createElement('button', document.body, 'save-button', {
+      innerText: 'Save track'
+    }).addEventListener('click', () => {
       localStorage.setItem('track', JSON.stringify(track.getCopy()));
     });
 
-    document.body.appendChild(button);
-
-    button = document.createElement('button');
-
-    button.innerText = 'Reset';
-    button.classList.add('reset-button');
-    button.addEventListener('click', () => {
+    createElement('button', document.body, 'reset-button', {
+      innerText: 'Reset'
+    }).addEventListener('click', () => {
       localStorage.removeItem('track');
     });
 
-    document.body.appendChild(button);
-
-    button = document.createElement('button');
-
-    button.innerText = 'Set start and direction';
-    button.classList.add('start-button');
-    button.addEventListener('click', () => {
-      state.toggleDirectionMode()
+    createElement('button', document.body, 'start-button', {
+      innerText: 'Set start and direction'
+    }).addEventListener('click', () => {
+      state.toggleDirectionMode();
     });
 
-    document.body.appendChild(button);
+    createElement('div', document.body, 'time-wrapper');
   }
 }
