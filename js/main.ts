@@ -2,7 +2,7 @@ import {Car} from './classes/car';
 import {Game} from './classes/game';
 import {Track, TrackCopy} from './classes/track';
 import {state as gameState} from './state/state';
-import {Config} from "./classes/config";
+import {Config, ConfigCar} from "./classes/config";
 
 export class TrackMania {
   private config: Config;
@@ -48,7 +48,7 @@ export class TrackMania {
     return this.track;
   }
 
-  public setCars(cars) {
+  public setCars(cars: ConfigCar[]) {
     this.cars = cars.map((carConfig) => new Car(carConfig.key, null, carConfig.color, this.elementHTML))
   }
 

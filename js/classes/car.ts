@@ -114,6 +114,7 @@ export class Car {
 
   calculatePosition(acceleration, time, track) {
     const move = getMove(acceleration, time, this.velocity);
+    console.log(this.prevCoordinates);
     const nextPosition = getNextPosition(this.coordinates, this.prevCoordinates, move, track.getTileFromCoordinates(this.coordinates),
       false);
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);

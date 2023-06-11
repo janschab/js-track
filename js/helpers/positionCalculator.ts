@@ -27,6 +27,7 @@ export function getNextPosition(position, prevPosition, move, currentTile, isSli
   }
 
   if (currentTile.type === TrackTileType.STRAIGHT) {
+    console.log(currentTile.startCoordinates);
     return calculateStraightPosition(currentTile, position, currentTile.startCoordinates, move, res);
   } else {
     return calculateTurnPosition(currentTile, position, currentTile.startCoordinates, move, res);
