@@ -6,31 +6,27 @@ import { state } from '../state/state';
 import { Direction, TrackTileSubtype, TrackTileType } from '../types/enum';
 import { Point } from './point';
 
-export class TrackTile {
+export type TrackTileCopy = Pick<TrackTile, 'id' | 'type' | 'subtype' | 'size' | 'position' | 'startCoordinates' | 'endCoordinates'>
 
-  constructor(tile = {}) {
+export class TrackTile {
+  public id: string | null;
+  public element: HTMLElement | null;
+  public type: TrackTileType | null;
+  public subtype: TrackTileSubtype | null;
+  public size: Point | null;
+  public position: Point | null;
+  public startCoordinates: Point | null;
+  public endCoordinates: Point | null;
+  public startPointElement?: HTMLElement;
+
+  constructor(tile: Partial<TrackTileCopy> = {}) {
     this.id = tile.id ?? null;
     this.element = null;
-    /**
-     * @type {TrackTileType | null}
-     */
     this.type = tile.type ?? null;
-    /**
-     * @type {TrackTileSubtype | null}
-     */
     this.subtype = tile.subtype ?? null;
-    this.size = tile.size ?? {
-      x: DEFAULT_DIMENSION,
-      y: DEFAULT_DIMENSION
-    };
+    this.size = tile.size ?? Point.from(DEFAULT_DIMENSION, DEFAULT_DIMENSION);
     this.position = tile.position ?? null;
-    /**
-     * @type {Point | null}
-     */
     this.startCoordinates = tile.startCoordinates ?? null;
-    /**
-     * @type {Point | null}
-     */
     this.endCoordinates = tile.endCoordinates ?? null;
   }
 
@@ -46,13 +42,10 @@ export class TrackTile {
   }
 
   setPosition(x, y) {
-    this.position = {
-      x,
-      y
-    };
+    this.position = Point.from(x, y);
   }
 
-  drawTile(trackElement) {
+  drawTile(trackElement?: HTMLElement) {
     if (!this.element) {
       this.element = document.createElement('div');
       this.element.classList.add('track-tile');
@@ -145,5 +138,17 @@ export class TrackTile {
 
   getCoordinatesPoint(point) {
     return getCoordinatesFromPositionAndRelativePoint(this.position, point);
+  }
+
+  getCopy(): TrackTileCopy {
+    return {
+      id: this.id,
+      type: this.type,
+      endCoordinates: this.endCoordinates,
+      startCoordinates: this.startCoordinates,
+      position: this.position,
+      size: this.size,
+      subtype: this.subtype,
+    }
   }
 }

@@ -1,49 +1,44 @@
 import { DEFAULT_DIMENSION } from '../constants/constants';
 import { generateUUID } from '../helpers/generateUUID';
 import { state } from '../state/state';
-import { TrackTile } from './track-element';
+import {TrackTile, TrackTileCopy} from './track-element';
+import {Point} from "./point";
+import {Direction} from "../types/enum";
+
+export interface TrackCopy {
+  startTile: Point | null;
+  direction: Direction;
+  size: Point;
+  tiles: Record<string, TrackTileCopy>;
+}
 
 export class Track {
-  constructor(sizeX, sizeY, tiles, startTile, direction) {
+  public startTile: Point | null;
+  public direction: Direction;
+  public trackElement: null | HTMLElement;
+  public size: Point;
+  public tiles: Record<string, TrackTile>;
+
+  constructor(sizeX: number, sizeY: number, elementHTML: HTMLElement, tiles?: Record<string, TrackTileCopy>, startTile?, direction?) {
     this.startTile = startTile;
     this.direction = direction;
     this.trackElement = null;
-    this.size = {
-      x: sizeX,
-      y: sizeY
-    };
-    /**
-     * @private
-     * @type {Record<string, TrackTile>}
-     */
+    this.size = Point.from(sizeX, sizeY);
     this.tiles = {};
 
     this.init(tiles);
-    this.drawTrack();
+    this.drawTrack(elementHTML);
   }
 
-  /**
-   * @param track {Track}
-   * @returns {Track}
-   */
-  static fromStorage(track) {
-    return new Track(track.size.x, track.size.y, track.tiles, track.startTile, track.direction);
+  static fromStorage(track: TrackCopy, elementHTML: HTMLElement): Track {
+    return new Track(track.size.x, track.size.y, elementHTML, track.tiles, track.startTile, track.direction);
   }
 
-  /**
-   *
-   * @param sizeX {number}
-   * @param sizeY {number}
-   * @returns {Track}
-   */
-  static fromDefaults(sizeX, sizeY) {
-    return new Track(sizeX, sizeY);
+  static fromDefaults(sizeX: number, sizeY: number, elementHTML: HTMLElement): Track {
+    return new Track(sizeX, sizeY, elementHTML);
   }
 
-  /**
-   * @param {TrackTile} trackTile
-   */
-  addTile(trackTile) {
+  addTile(trackTile: TrackTile): void {
     if (!trackTile.id) {
       trackTile.setId(generateUUID());
     }
@@ -51,10 +46,7 @@ export class Track {
     this.tiles[trackTile.id] = trackTile;
   }
 
-  /**
-   * @param {Record<string, TrackTile>} tiles
-   */
-  init(tiles) {
+  init(tiles: Record<string, TrackTileCopy>): void {
     if (!tiles) {
       for (let i = 0; i < this.size.x; i++) {
         for (let j = 0; j < this.size.y; j++) {
@@ -91,11 +83,11 @@ export class Track {
     });
   }
 
-  drawTrack() {
+  drawTrack(elementHTML) {
     this.trackElement = document.createElement('div');
     this.trackElement.classList.add('track');
     this.trackElement.style.width = this.size.x * DEFAULT_DIMENSION + 'px';
-    document.body.appendChild(this.trackElement);
+    elementHTML.appendChild(this.trackElement);
 
     Object.values(this.tiles).forEach((tile) => {
       tile.drawTile(this.trackElement);
@@ -104,12 +96,17 @@ export class Track {
     console.log('draw track');
   }
 
-  getCopy() {
+  getCopy(): TrackCopy {
     return {
       startTile: this.startTile,
       direction: this.direction,
       size: this.size,
-      tiles: this.tiles
+      tiles: Object.entries(this.tiles).reduce((previousValue, [key, value]) => {
+        return {
+          ...previousValue,
+          [key]: value.getCopy()
+        }
+      }, {})
     };
   }
 
@@ -156,5 +153,9 @@ export class Track {
         alert('fix the track');
       }
     }
+  }
+
+  destroy() {
+    this.trackElement.parentElement.removeChild(this.trackElement);
   }
 }

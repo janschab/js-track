@@ -5,9 +5,29 @@ import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } fr
 import { getNextPosition } from '../helpers/positionCalculator';
 import { state } from '../state/state';
 import { Point } from './point';
+import {TrackTile} from "./track-element";
 
 export class Car {
-  constructor(key, reverseKey, color) {
+  public key: string;
+  public reverseKey: string;
+  public element: HTMLElement;
+  public coordinates: Point;
+  public prevCoordinates: Point;
+  public outPosition: Point | null;
+  public outPrevPosition: Point | null;
+  public isSlipping: boolean;
+  public weight: number;
+  public stiction: number;
+  public velocity: number;
+  public acceleration: number;
+  public deceleration: number;
+  public angle: number;
+  public color: any;
+  public roundTimestamps: number[];
+  public prevTile: TrackTile | null;
+  public timeDisplayElement: HTMLElement;
+
+  constructor(key, reverseKey, color, elementHTML) {
     this.key = key;
     this.reverseKey = reverseKey;
     this.element = null;
@@ -33,15 +53,15 @@ export class Car {
      */
     this.prevTile = null;
 
-    this.init();
+    this.init(elementHTML);
     this.drawCar();
   }
 
-  init() {
+  init(elementHTML: HTMLElement) {
     this.element = document.createElement('div');
     this.element.classList.add('car');
     this.element.style.setProperty('--car-color', this.color);
-    document.body.appendChild(this.element);
+    elementHTML.appendChild(this.element);
 
     this.initTimeDisplay();
   }
@@ -60,10 +80,7 @@ export class Car {
     this.prevCoordinates.x = this.coordinates.x;
     this.prevCoordinates.y = this.coordinates.y;
 
-    this.coordinates = {
-      x: nextPosition.x,
-      y: nextPosition.y
-    };
+    this.coordinates = Point.from(nextPosition.x, nextPosition.y);
 
     this.angle = nextPosition.angle;
   }
@@ -101,8 +118,8 @@ export class Car {
       false);
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
 
-    this.stictionDelta = this.stiction - centrifugalForce;
-    const isSlipping = this.stictionDelta < 0;
+    let stictionDelta = this.stiction - centrifugalForce;
+    const isSlipping = stictionDelta < 0;
 
     if (isSlipping) {
       this.handleSlipping(time);
