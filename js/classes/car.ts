@@ -85,8 +85,8 @@ export class Car {
     this.angle = nextPosition.angle;
   }
 
-  handleThrottle(isKeyPressed, time, track) {
-    this.time(track);
+  handleThrottle(isKeyPressed, time, track, timeCallback) {
+    this.time(track, timeCallback);
 
     if (this.isSlipping) {
       if (this.velocity <= 0) {
@@ -151,19 +151,19 @@ export class Car {
     this.drawCar();
   }
 
-  /**
-   * @param {Track} track
-   */
-  time(track) {
+  time(track, timeCallback) {
     const tile = track.getTileFromCoordinates(this.coordinates);
 
-    if (tile && tile.isStartTile()) {
-      this.prevTile = tile;
-    } else {
-      if (this.prevTile && this.prevTile.isStartTile()) {
-        this.roundTimestamps.push(Date.now());
+    if (!this.isSlipping) {
+      if (tile && tile.isStartTile()) {
+        this.prevTile = tile;
+      } else {
+        if (this.prevTile && this.prevTile.isStartTile()) {
+          this.roundTimestamps.push(Date.now());
+          timeCallback(this.roundTimestamps[this.roundTimestamps.length - 1], this.roundTimestamps);
+        }
+        this.prevTile = null;
       }
-      this.prevTile = null;
     }
 
     this.drawTimes();

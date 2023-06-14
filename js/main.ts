@@ -11,14 +11,16 @@ export class TrackMania {
   private cars: Car[] = [];
   private isStarted: boolean = false;
   private elementHTML: HTMLElement;
+  private timeCallback: (time: number, times: Array<number>) => void;
 
   constructor(config: Config) {
     this.config = config;
   }
 
-  public init(elementHTML) {
+  public init(elementHTML, timeCallback: (time: number, times: Array<number>) => void = () => {}) {
     this.elementHTML = elementHTML;
     this.game = new Game();
+    this.timeCallback = timeCallback;
   }
 
   public race() {
@@ -61,7 +63,7 @@ export class TrackMania {
       this.game.tick();
 
       this.cars.forEach(car => {
-        car.handleThrottle(this.game.getKey(car.key), this.game.timeDiff, this.track);
+        car.handleThrottle(this.game.getKey(car.key), this.game.timeDiff, this.track, this.timeCallback);
       });
 
       if (this.isStarted) {
