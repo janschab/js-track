@@ -11,6 +11,7 @@ export class Point {
     return new Point(x, y);
   }
 
+  static copy(point: { x: number; y: number }): Point;
   static copy(point: Point): Point {
     return new Point(point.x, point.y);
   }

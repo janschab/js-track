@@ -22,26 +22,24 @@ export class TrackTile {
   constructor(tile: Partial<TrackTileCopy> = {}) {
     this.id = tile.id ?? null;
     this.element = null;
-    this.type = tile.type ?? null;
     this.subtype = tile.subtype ?? null;
     this.size = tile.size ?? Point.from(DEFAULT_DIMENSION, DEFAULT_DIMENSION);
     this.position = tile.position ?? null;
     this.startCoordinates = tile.startCoordinates ?? null;
     this.endCoordinates = tile.endCoordinates ?? null;
+
+    this.setType(tile.type ?? null)
   }
 
-  setId(id) {
+  setId(id: string): void {
     this.id = id;
   }
 
-  /**
-   * @param {TrackTileType} trackType
-   */
-  setType(trackType) {
+  setType(trackType: TrackTileType): void {
     this.type = trackType;
   }
 
-  setPosition(x, y) {
+  setPosition(x: number, y: number): void {
     this.position = Point.from(x, y);
   }
 
@@ -105,11 +103,7 @@ export class TrackTile {
     return this.position.x === state.startTile$.value.x && this.position.y === state.startTile$.value.y;
   }
 
-  /**
-   * @param {Direction} direction
-   * @return {TrackTile}
-   */
-  setStartCoordinates(direction) {
+  setStartCoordinates(direction: Direction): TrackTile {
     if (direction === Direction.NORMAL) {
       this.startCoordinates = this.getCoordinatesPoint(getBoundingPoints(this.subtype)[0]);
       this.endCoordinates = this.getCoordinatesPoint(getBoundingPoints(this.subtype)[1]);
@@ -121,10 +115,10 @@ export class TrackTile {
     return this;
   }
 
-  setStartCoordinatesFromPrevious(prevEndCoordinated) {
+  setStartCoordinatesFromPrevious(prevEndCoordinated: Point): void {
     const possiblePoints = [
       this.getCoordinatesPoint(getBoundingPoints(this.subtype)[0]),
-      this.getCoordinatesPoint(getBoundingPoints(this.subtype)[1])
+      this.getCoordinatesPoint(getBoundingPoints(this.subtype)[1]),
     ];
 
     this.endCoordinates = getFurtherPoint(prevEndCoordinated, possiblePoints[0], possiblePoints[1]);
@@ -136,7 +130,7 @@ export class TrackTile {
     }
   }
 
-  getCoordinatesPoint(point) {
+  getCoordinatesPoint(point: Point): Point {
     return getCoordinatesFromPositionAndRelativePoint(this.position, point);
   }
 
@@ -149,6 +143,6 @@ export class TrackTile {
       position: this.position,
       size: this.size,
       subtype: this.subtype,
-    }
+    };
   }
 }

@@ -1,9 +1,9 @@
 import { DEFAULT_DIMENSION } from '../constants/constants';
 import { generateUUID } from '../helpers/generateUUID';
 import { state } from '../state/state';
-import {TrackTile, TrackTileCopy} from './track-element';
-import {Point} from "./point";
-import {Direction} from "../types/enum";
+import { Direction } from '../types/enum';
+import { Point } from './point';
+import { TrackTile, TrackTileCopy } from './track-element';
 
 export interface TrackCopy {
   startTile: Point | null;
@@ -19,7 +19,14 @@ export class Track {
   public size: Point;
   public tiles: Record<string, TrackTile>;
 
-  constructor(sizeX: number, sizeY: number, elementHTML: HTMLElement, tiles?: Record<string, TrackTileCopy>, startTile?, direction?) {
+  constructor(
+    sizeX: number,
+    sizeY: number,
+    elementHTML: HTMLElement,
+    tiles?: Record<string, TrackTileCopy>,
+    startTile?,
+    direction?,
+  ) {
     this.startTile = startTile;
     this.direction = direction;
     this.trackElement = null;
@@ -104,9 +111,9 @@ export class Track {
       tiles: Object.entries(this.tiles).reduce((previousValue, [key, value]) => {
         return {
           ...previousValue,
-          [key]: value.getCopy()
-        }
-      }, {})
+          [key]: value.getCopy(),
+        };
+      }, {}),
     };
   }
 
@@ -117,8 +124,14 @@ export class Track {
    */
   getTileFromCoordinates(coordinates) {
     return Object.values(this.tiles).find((tile) => {
-      return (coordinates.x < ((tile.position.x + 1) * DEFAULT_DIMENSION) && coordinates.x >= (tile.position.x * DEFAULT_DIMENSION)) &&
-             (coordinates.y < ((tile.position.y + 1) * DEFAULT_DIMENSION) && coordinates.y >= (tile.position.y * DEFAULT_DIMENSION));
+      return (coordinates.x <
+             ((tile.position.x + 1) * DEFAULT_DIMENSION) &&
+             coordinates.x >=
+             (tile.position.x * DEFAULT_DIMENSION)) &&
+             (coordinates.y <
+             ((tile.position.y + 1) * DEFAULT_DIMENSION) &&
+             coordinates.y >=
+             (tile.position.y * DEFAULT_DIMENSION));
     });
   }
 

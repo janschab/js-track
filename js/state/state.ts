@@ -1,7 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
+import { Point } from '../classes/point';
 import { DEFAULT_DIMENSION, DEFAULT_X_SIZE, DEFAULT_Y_SIZE, RADIUS } from '../constants/constants';
 import { Direction } from '../types/enum';
-import {Point} from "../classes/point";
 
 class State {
   public startTile$: BehaviorSubject<Point>;
@@ -16,15 +16,15 @@ class State {
     this.size = Point.from(DEFAULT_X_SIZE, DEFAULT_Y_SIZE);
   }
 
-  setStartTile(x, y) {
+  setStartTile(x: number, y: number): void {
     this.startTile$.next(Point.from(x, y));
   }
 
-  getStartPosition() {
-    return {
+  getStartPosition(): Point {
+    return Point.copy({
       x: (this.startTile$.value.x + 1) * DEFAULT_DIMENSION - RADIUS,
       y: (this.startTile$.value.y + 1) * DEFAULT_DIMENSION - RADIUS,
-    };
+    });
   }
 
   toggleDirectionMode(state: boolean) {

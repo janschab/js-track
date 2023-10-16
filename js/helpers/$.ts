@@ -1,11 +1,4 @@
-/**
- * @param {'div' | 'button'} type
- * @param {Node} parent
- * @param {string} className
- * @param {Record<string, string>} props
- * @return {Node}
- */
-export function createElement(type, parent, className = '', props = {}) {
+export function createElement(type: 'div' | 'button', parent: HTMLElement, className: string = '', props: Record<string, string> = {}): HTMLElement {
   const element = document.createElement(type);
 
   if (className) {

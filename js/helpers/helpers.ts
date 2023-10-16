@@ -1,48 +1,34 @@
+import { Point } from '../classes/point';
 import { DEFAULT_DIMENSION, RADIUS, STICTION_FACTOR } from '../constants/constants';
 import { TrackTileSubtype } from '../types/enum';
 
-export function getVelocity(a, t) {
+export function getVelocity(a: number, t: number): number {
   return a * t;
 }
 
-export function getMove(a, t, v) {
+export function getMove(a: number, t: number, v: number): number {
   return ((t * t * a) / 2) + (v * t);
 }
 
-export function getAngle(s, r) {
+export function getAngle(s: number, r: number): number {
   return (s * 180) / (Math.PI * r);
 }
 
-/**
- * @param {Point} prevPoint
- * @param {Point} point
- * @param {Point} move
- * @return {Point}
- */
-export function getFurtherPointFromMove(prevPoint, point, move) {
-  let firstPoint = {
+export function getFurtherPointFromMove(prevPoint: Point, point: Point, move: Point): Point {
+  const firstPoint = Point.copy({
     x: point.x - move.x,
-    y: point.y - move.y
-  };
-  let secondPoint = {
+    y: point.y - move.y,
+  });
+  const secondPoint = Point.copy({
     x: point.x + move.x,
-    y: point.y + move.y
-  };
+    y: point.y + move.y,
+  });
   return getFurtherPoint(prevPoint, firstPoint, secondPoint);
 }
 
-/**
- * @param {Point} prevPoint
- * @param {Point} firstPoint
- * @param {Point} secondPoint
- * @return {Point}
- */
-export function getFurtherPoint(prevPoint, firstPoint, secondPoint) {
-  let firstDistance;
-  let secondDistance;
-
-  firstDistance = Math.sqrt(Math.pow(firstPoint.x - prevPoint.x, 2) + Math.pow(firstPoint.y - prevPoint.y, 2));
-  secondDistance = Math.sqrt(Math.pow(secondPoint.x - prevPoint.x, 2) + Math.pow(secondPoint.y - prevPoint.y, 2));
+export function getFurtherPoint(prevPoint: Point, firstPoint: Point, secondPoint: Point): Point {
+  const firstDistance = Math.sqrt(Math.pow(firstPoint.x - prevPoint.x, 2) + Math.pow(firstPoint.y - prevPoint.y, 2));
+  const secondDistance = Math.sqrt(Math.pow(secondPoint.x - prevPoint.x, 2) + Math.pow(secondPoint.y - prevPoint.y, 2));
 
   if (firstDistance > secondDistance) {
     return firstPoint;
@@ -51,47 +37,32 @@ export function getFurtherPoint(prevPoint, firstPoint, secondPoint) {
   }
 }
 
-/**
- * @param {TrackTileSubtype} subtype
- * @return {Point}
- */
-export function getCenterPosition(subtype) {
+export function getCenterPosition(subtype: TrackTileSubtype): Point {
   switch (subtype) {
     case TrackTileSubtype.NE: {
-      return {
-        x: DEFAULT_DIMENSION,
-        y: 0
-      };
+      return Point.from(DEFAULT_DIMENSION, 0);
     }
     case TrackTileSubtype.SE: {
-      return {
-        x: DEFAULT_DIMENSION,
-        y: DEFAULT_DIMENSION
-      };
+      return Point.from(DEFAULT_DIMENSION, DEFAULT_DIMENSION);
     }
     case TrackTileSubtype.SW: {
-      return {
-        x: 0,
-        y: DEFAULT_DIMENSION
-      };
+      return Point.from(0, DEFAULT_DIMENSION);
     }
     case TrackTileSubtype.NW: {
-      return {
-        x: 0,
-        y: 0
-      };
+      return Point.from(0, 0);
     }
   }
+  return Point.from(0, 0);
 }
 
-export function degrees2radians(degrees) {
+export function degrees2radians(degrees: number): number {
   return degrees * (Math.PI / 180);
 }
 
-export function calculateCentrifugalForce(deltaAngle, time, weight) {
+export function calculateCentrifugalForce(deltaAngle: number, time: number, weight: number): number {
   return weight * ((deltaAngle / time) ** 2) * RADIUS;
 }
 
-export function calculateStiction(weight) {
+export function calculateStiction(weight: number): number {
   return weight * STICTION_FACTOR;
 }

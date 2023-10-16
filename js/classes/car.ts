@@ -3,9 +3,12 @@ import { SLIPPING_DECELERATION } from '../constants/constants';
 import { createElement } from '../helpers/$';
 import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } from '../helpers/helpers';
 import { getNextPosition } from '../helpers/positionCalculator';
+import { TrackMania } from '../main';
 import { state } from '../state/state';
+import { NextPosition } from './nextPosition';
 import { Point } from './point';
-import {TrackTile} from "./track-element";
+import { Track } from './track';
+import { TrackTile } from './track-element';
 
 export class Car {
   public key: string;
@@ -27,7 +30,7 @@ export class Car {
   public prevTile: TrackTile | null;
   public timeDisplayElement: HTMLElement;
 
-  constructor(key, reverseKey, color, elementHTML) {
+  constructor(key: string, reverseKey: string, color: string, elementHTML: HTMLElement) {
     this.key = key;
     this.reverseKey = reverseKey;
     this.element = null;
@@ -72,10 +75,7 @@ export class Car {
     this.element.style.rotate = this.angle + 'deg';
   }
 
-  /**
-   * @param {NextPosition} nextPosition
-   */
-  setPosition(nextPosition) {
+  setPosition(nextPosition: NextPosition): void {
 
     this.prevCoordinates.x = this.coordinates.x;
     this.prevCoordinates.y = this.coordinates.y;
@@ -85,7 +85,7 @@ export class Car {
     this.angle = nextPosition.angle;
   }
 
-  handleThrottle(isKeyPressed, time, track, timeCallback) {
+  handleThrottle(isKeyPressed: boolean, time: number, track: Track, timeCallback: (time: number, times: Array<number>) => void) {
     this.time(track, timeCallback);
 
     if (this.isSlipping) {
@@ -112,11 +112,14 @@ export class Car {
     }
   }
 
-  calculatePosition(acceleration, time, track) {
+  calculatePosition(acceleration: number, time: number, track: Track) {
     const move = getMove(acceleration, time, this.velocity);
-    console.log(this.prevCoordinates);
-    const nextPosition = getNextPosition(this.coordinates, this.prevCoordinates, move, track.getTileFromCoordinates(this.coordinates),
-      false);
+    const nextPosition = getNextPosition(this.coordinates,
+      this.prevCoordinates,
+      move,
+      track.getTileFromCoordinates(this.coordinates),
+      false,
+    );
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
 
     let stictionDelta = this.stiction - centrifugalForce;
@@ -132,7 +135,7 @@ export class Car {
     this.drawCar();
   }
 
-  handleSlipping(time) {
+  handleSlipping(time: number): void {
     this.isSlipping = true;
     this.outPosition = Point.copy(this.coordinates);
     this.outPrevPosition = Point.copy(this.prevCoordinates);
@@ -140,7 +143,7 @@ export class Car {
     this.calculateSlippingPosition(time);
   }
 
-  calculateSlippingPosition(time) {
+  calculateSlippingPosition(time: number): void {
     const move = getMove(SLIPPING_DECELERATION, time, this.velocity);
     const nextPosition = getNextPosition(this.coordinates, this.prevCoordinates, move, null, true);
     nextPosition.angle = this.angle;
@@ -151,7 +154,7 @@ export class Car {
     this.drawCar();
   }
 
-  time(track, timeCallback) {
+  time(track: Track, timeCallback: (time: number, times: Array<number>) => void): void {
     const tile = track.getTileFromCoordinates(this.coordinates);
 
     if (!this.isSlipping) {
@@ -177,7 +180,9 @@ export class Car {
     let text = '';
 
     if (this.roundTimestamps.length) {
-      text += `<b style="color:${this.color}">${Duration.fromMillis(Date.now() - this.roundTimestamps[this.roundTimestamps.length - 1])
+      text += `<b style="color:${this.color}">${Duration.fromMillis(Date.now() -
+                                                                    this.roundTimestamps[this.roundTimestamps.length -
+                                                                    1])
         .toFormat('s.S')}</b>`;
       text += '<br>';
     }

@@ -1,47 +1,28 @@
+import { NextPosition } from '../classes/nextPosition';
 import { Point } from '../classes/point';
+import { TrackTile } from '../classes/track-element';
 import { DEFAULT_DIMENSION, RADIUS } from '../constants/constants';
 import { TrackTileSubtype, TrackTileType } from '../types/enum';
 import { degrees2radians, getAngle, getCenterPosition, getFurtherPoint, getFurtherPointFromMove } from './helpers';
 
-/**
- * @param {Point} position
- * @param {Point} prevPosition
- * @param {number} move
- * @param {TrackTile} currentTile
- * @param {boolean} isSlipping
- * @return {NextPosition}
- */
-export function getNextPosition(position, prevPosition, move, currentTile, isSlipping) {
-  /**
-   * @type {NextPosition}
-   */
-  let res = {
-    x: position.x,
-    y: position.y,
-    angle: 0,
-    deltaAngle: 0
-  };
-
+export function getNextPosition(position: Point,
+  prevPosition: Point,
+  move: number,
+  currentTile: TrackTile,
+  isSlipping: boolean,
+): NextPosition {
   if (isSlipping) {
-    return calculateSlippingPosition(position, prevPosition, move, res);
+    return calculateSlippingPosition(position, prevPosition, move);
   }
 
   if (currentTile.type === TrackTileType.STRAIGHT) {
-    console.log(currentTile.startCoordinates);
-    return calculateStraightPosition(currentTile, position, currentTile.startCoordinates, move, res);
+    return calculateStraightPosition(currentTile, position, currentTile.startCoordinates, move);
   } else {
-    return calculateTurnPosition(currentTile, position, currentTile.startCoordinates, move, res);
+    return calculateTurnPosition(currentTile, position, currentTile.startCoordinates, move);
   }
 }
 
-/**
- * @param {Point} position
- * @param {Point} prevPosition
- * @param {number} move
- * @param {NextPosition} res
- * @return {NextPosition}
- */
-function calculateSlippingPosition(position, prevPosition, move, res) {
+function calculateSlippingPosition(position: Point, prevPosition: Point, move: number): NextPosition {
   let delta = Point.from(position.x - prevPosition.x, position.y - prevPosition.y);
   let angle = Math.atan2(delta.y, delta.x);
   let x = Math.cos(angle) * move;
@@ -49,72 +30,66 @@ function calculateSlippingPosition(position, prevPosition, move, res) {
 
   let point = getFurtherPointFromMove(prevPosition, position, Point.from(x, y));
 
-  return {
+  return NextPosition.fromPosition({
     x: point.x,
     y: point.y,
     deltaAngle: 0,
-    angle: 0
-  };
+    angle: 0,
+  });
 }
 
-/**
- * @param {TrackTile} currentTile
- * @param {Point} position
- * @param {Point} prevPosition
- * @param {number} move
- * @param {NextPosition} res
- * @return {NextPosition}
- */
-function calculateStraightPosition(currentTile, position, prevPosition, move, res) {
+
+function calculateStraightPosition(
+  currentTile: TrackTile,
+  position: Point,
+  prevPosition: Point,
+  move: number,
+): NextPosition {
   if (currentTile.subtype === TrackTileSubtype.HORIZONTAL) {
     let point = getFurtherPointFromMove(prevPosition, position, Point.from(move, 0));
 
-    return {
+    return NextPosition.fromPosition({
       x: point.x,
       y: point.y,
       deltaAngle: 0,
-      angle: 0
-    };
+      angle: 0,
+    });
   }
   if (currentTile.subtype === TrackTileSubtype.VERTICAL) {
     let point = getFurtherPointFromMove(prevPosition, position, Point.from(0, move));
-    return {
+    return NextPosition.fromPosition({
       x: point.x,
       y: point.y,
       deltaAngle: 0,
-      angle: 90
-    };
+      angle: 90,
+    });
   }
 }
 
-/**
- * @param {TrackTile} currentTile
- * @param {Point} position
- * @param {Point} prevPosition
- * @param {number} move
- * @param {NextPosition} res
- * @return {NextPosition}
- */
-function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
+function calculateTurnPosition(currentTile: TrackTile,
+  position: Point,
+  prevPosition: Point,
+  move: number,
+): NextPosition {
   const relativePosition = {
     x: position.x - currentTile.position.x * DEFAULT_DIMENSION,
-    y: position.y - currentTile.position.y * DEFAULT_DIMENSION
+    y: position.y - currentTile.position.y * DEFAULT_DIMENSION,
   };
 
   const relativePrevPosition = {
     x: prevPosition.x - currentTile.position.x * DEFAULT_DIMENSION,
-    y: prevPosition.y - currentTile.position.y * DEFAULT_DIMENSION
+    y: prevPosition.y - currentTile.position.y * DEFAULT_DIMENSION,
   };
 
   let centerPosition = getCenterPosition(currentTile.subtype);
 
   let cartesianPosition = Point.from(
     relativePosition.x - centerPosition.x,
-    centerPosition.y - relativePosition.y
+    centerPosition.y - relativePosition.y,
   );
   let cartesianPrevPosition = Point.from(
     relativePrevPosition.x - centerPosition.x,
-    centerPosition.y - relativePrevPosition.y
+    centerPosition.y - relativePrevPosition.y,
   );
 
   let currentAngle = Math.atan2(cartesianPosition.y, cartesianPosition.x) * 180 / Math.PI;
@@ -124,16 +99,16 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
 
   const firstPoint = Point.from(
     Math.cos(degrees2radians(firstDegree)) * RADIUS,
-    Math.sin(degrees2radians(firstDegree)) * RADIUS
+    Math.sin(degrees2radians(firstDegree)) * RADIUS,
   );
 
   const secondPoint = Point.from(
     Math.cos(degrees2radians(secondDegree)) * RADIUS,
-    Math.sin(degrees2radians(secondDegree)) * RADIUS
+    Math.sin(degrees2radians(secondDegree)) * RADIUS,
   );
   const point = getFurtherPoint(cartesianPrevPosition, firstPoint, secondPoint);
 
-  let angle;
+  let angle: number;
 
   if (firstPoint === point) {
     angle = firstDegree;
@@ -141,21 +116,14 @@ function calculateTurnPosition(currentTile, position, prevPosition, move, res) {
     angle = secondDegree;
   }
 
-  res = {
+  return NextPosition.fromPosition({
     x: (point.x + centerPosition.x) + currentTile.position.x * DEFAULT_DIMENSION,
     y: (-point.y + centerPosition.y) + currentTile.position.y * DEFAULT_DIMENSION,
     deltaAngle: Math.abs(currentAngle - angle),
-    angle: 90 - angle
-  };
-
-  return res;
+    angle: 90 - angle,
+  });
 }
 
-/**
- * @param {Point} position
- * @param {Point} relativePoint
- * @return {Point}
- */
-export function getCoordinatesFromPositionAndRelativePoint(position, relativePoint) {
+export function getCoordinatesFromPositionAndRelativePoint(position: Point, relativePoint: Point): Point {
   return Point.from(position.x * DEFAULT_DIMENSION + relativePoint.x, position.y * DEFAULT_DIMENSION + relativePoint.y);
 }

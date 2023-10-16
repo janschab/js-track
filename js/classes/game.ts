@@ -1,6 +1,3 @@
-import { createElement } from '../helpers/$';
-import { state } from '../state/state';
-
 export class Game {
   public keys: Record<string, boolean>;
   public time: number;
