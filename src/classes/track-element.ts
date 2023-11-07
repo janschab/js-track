@@ -28,7 +28,7 @@ export class TrackTile {
     this.startCoordinates = tile.startCoordinates ?? null;
     this.endCoordinates = tile.endCoordinates ?? null;
 
-    this.setType(tile.type ?? null)
+    this.setType(tile.type ?? null);
   }
 
   setId(id: string): void {
@@ -74,7 +74,7 @@ export class TrackTile {
     this.element.style.backgroundColor = this.isStartTile() ? '#ff7e7e' : 'white';
   }
 
-  handleClick() {
+  handleClick(): void {
     if (state.directionMode) {
       if (this.isStartTile()) {
         state.toggleDirection();
@@ -99,7 +99,7 @@ export class TrackTile {
     this.drawTile();
   }
 
-  isStartTile() {
+  isStartTile(): boolean {
     return this.position.x === state.startTile$.value.x && this.position.y === state.startTile$.value.y;
   }
 

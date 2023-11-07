@@ -17,11 +17,11 @@ export class Game {
     });
   }
 
-  getKey(key) {
+  getKey(key: string): boolean {
     return this.keys[key];
   }
 
-  tick() {
+  tick(): void {
     this.timeDiff = Date.now() - this.time;
     this.time = Date.now();
   }

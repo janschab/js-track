@@ -4,3 +4,6 @@ export const SLIPPING_DECELERATION = -0.0015;
 export const STICTION_FACTOR = 20;
 export const DEFAULT_X_SIZE = 10;
 export const DEFAULT_Y_SIZE = 5;
+export const DEFAULT_WEIGHT = 100;
+export const DEFAULT_ACCELERATION = 0.0007;
+export const DEFAULT_DECELERATION = 0.0014;

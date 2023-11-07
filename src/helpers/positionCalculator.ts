@@ -5,7 +5,8 @@ import { DEFAULT_DIMENSION, RADIUS } from '../constants/constants';
 import { TrackTileSubtype, TrackTileType } from '../types/enum';
 import { degrees2radians, getAngle, getCenterPosition, getFurtherPoint, getFurtherPointFromMove } from './helpers';
 
-export function getNextPosition(position: Point,
+export function getNextPosition(
+  position: Point,
   prevPosition: Point,
   move: number,
   currentTile: TrackTile,
@@ -38,7 +39,6 @@ function calculateSlippingPosition(position: Point, prevPosition: Point, move: n
   });
 }
 
-
 function calculateStraightPosition(
   currentTile: TrackTile,
   position: Point,
@@ -66,7 +66,8 @@ function calculateStraightPosition(
   }
 }
 
-function calculateTurnPosition(currentTile: TrackTile,
+function calculateTurnPosition(
+  currentTile: TrackTile,
   position: Point,
   prevPosition: Point,
   move: number,

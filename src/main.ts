@@ -1,5 +1,5 @@
 import { Car } from './classes/car';
-import { Config, ConfigCar } from './classes/config';
+import { ConfigCar } from './classes/config';
 import { Game } from './classes/game';
 import { Track, TrackCopy } from './classes/track';
 import { state as gameState } from './state/state';
@@ -15,7 +15,8 @@ export class TrackMania {
   public init(elementHTML: HTMLElement, timeCallback: (time: number, times: Array<number>) => void): void {
     this.elementHTML = elementHTML;
     this.game = new Game();
-    this.timeCallback = timeCallback ?? (() => {});
+    this.timeCallback = timeCallback ?? (() => {
+    });
   }
 
   public race(): void {

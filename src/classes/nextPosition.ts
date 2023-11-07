@@ -10,7 +10,7 @@ export class NextPosition extends Point {
     this.angle = angle;
   }
 
-  static fromPosition({x, y, angle, deltaAngle}: Pick<NextPosition, 'x' | 'y' | 'angle' | 'deltaAngle'>): NextPosition {
-    return new NextPosition(x, y, angle, deltaAngle);
+  static fromPosition(p: Pick<NextPosition, 'x' | 'y' | 'angle' | 'deltaAngle'>): NextPosition {
+    return new NextPosition(p.x, p.y, p.angle, p.deltaAngle);
   }
 }

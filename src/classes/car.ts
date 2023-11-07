@@ -1,9 +1,13 @@
 import { Duration } from 'luxon';
-import { SLIPPING_DECELERATION } from '../constants/constants';
+import {
+  DEFAULT_ACCELERATION,
+  DEFAULT_DECELERATION,
+  DEFAULT_WEIGHT,
+  SLIPPING_DECELERATION,
+} from '../constants/constants';
 import { createElement } from '../helpers/$';
 import { calculateCentrifugalForce, calculateStiction, getMove, getVelocity } from '../helpers/helpers';
 import { getNextPosition } from '../helpers/positionCalculator';
-import { TrackMania } from '../main';
 import { state } from '../state/state';
 import { NextPosition } from './nextPosition';
 import { Point } from './point';
@@ -25,7 +29,7 @@ export class Car {
   public acceleration: number;
   public deceleration: number;
   public angle: number;
-  public color: any;
+  public color: string;
   public roundTimestamps: number[];
   public prevTile: TrackTile | null;
   public timeDisplayElement: HTMLElement;
@@ -33,6 +37,7 @@ export class Car {
   constructor(key: string, reverseKey: string, color: string, elementHTML: HTMLElement) {
     this.key = key;
     this.reverseKey = reverseKey;
+    this.color = color;
     this.element = null;
 
     this.coordinates = new Point(state.getStartPosition().x, state.getStartPosition().y);
@@ -42,25 +47,21 @@ export class Car {
 
     this.isSlipping = false;
 
-    this.weight = 100;
+    this.weight = DEFAULT_WEIGHT;
     this.stiction = calculateStiction(this.weight);
     this.velocity = 0;
-    this.acceleration = 0.0007;
-    this.deceleration = 0.0014;
+    this.acceleration = DEFAULT_ACCELERATION;
+    this.deceleration = DEFAULT_DECELERATION;
     this.angle = 0;
-    this.color = color;
 
     this.roundTimestamps = [];
-    /**
-     * @type {TrackTile | null}
-     */
     this.prevTile = null;
 
     this.init(elementHTML);
     this.drawCar();
   }
 
-  init(elementHTML: HTMLElement) {
+  init(elementHTML: HTMLElement): void {
     this.element = document.createElement('div');
     this.element.classList.add('car');
     this.element.style.setProperty('--car-color', this.color);
@@ -76,7 +77,6 @@ export class Car {
   }
 
   setPosition(nextPosition: NextPosition): void {
-
     this.prevCoordinates.x = this.coordinates.x;
     this.prevCoordinates.y = this.coordinates.y;
 
@@ -85,16 +85,17 @@ export class Car {
     this.angle = nextPosition.angle;
   }
 
-  handleThrottle(isKeyPressed: boolean, time: number, track: Track, timeCallback: (time: number, times: Array<number>) => void) {
-    this.time(track, timeCallback);
+  handleThrottle(
+    isKeyPressed: boolean,
+    time: number,
+    track: Track,
+    timeCallback: (time: number, times: Array<number>) => void,
+  ): void {
+    this.runTimeCallback(track, timeCallback);
 
     if (this.isSlipping) {
       if (this.velocity <= 0) {
-        this.isSlipping = false;
-        this.coordinates = Point.copy(this.outPosition);
-        this.prevCoordinates = Point.copy(this.outPrevPosition);
-        this.outPosition = null;
-        this.outPrevPosition = null;
+        this.returnToPositionBeforeSlipping();
         isKeyPressed = true;
       } else {
         this.calculateSlippingPosition(time);
@@ -112,21 +113,21 @@ export class Car {
     }
   }
 
-  calculatePosition(acceleration: number, time: number, track: Track) {
+  calculatePosition(acceleration: number, time: number, track: Track): void {
     const move = getMove(acceleration, time, this.velocity);
-    const nextPosition = getNextPosition(this.coordinates,
+    const nextPosition = getNextPosition(
+      this.coordinates,
       this.prevCoordinates,
       move,
       track.getTileFromCoordinates(this.coordinates),
       false,
     );
     const centrifugalForce = calculateCentrifugalForce(nextPosition.deltaAngle, time, this.weight);
-
-    let stictionDelta = this.stiction - centrifugalForce;
+    const stictionDelta = this.stiction - centrifugalForce;
     const isSlipping = stictionDelta < 0;
 
     if (isSlipping) {
-      this.handleSlipping(time);
+      this.startSlipping(time);
       return;
     }
 
@@ -135,7 +136,7 @@ export class Car {
     this.drawCar();
   }
 
-  handleSlipping(time: number): void {
+  startSlipping(time: number): void {
     this.isSlipping = true;
     this.outPosition = Point.copy(this.coordinates);
     this.outPrevPosition = Point.copy(this.prevCoordinates);
@@ -154,7 +155,7 @@ export class Car {
     this.drawCar();
   }
 
-  time(track: Track, timeCallback: (time: number, times: Array<number>) => void): void {
+  runTimeCallback(track: Track, timeCallback: (time: number, times: Array<number>) => void): void {
     const tile = track.getTileFromCoordinates(this.coordinates);
 
     if (!this.isSlipping) {
@@ -172,18 +173,19 @@ export class Car {
     this.drawTimes();
   }
 
-  initTimeDisplay() {
+  initTimeDisplay(): void {
     this.timeDisplayElement = createElement('div', document.querySelector('.time-wrapper'), 'time-display');
   }
 
-  drawTimes() {
+  drawTimes(): void {
     let text = '';
 
     if (this.roundTimestamps.length) {
-      text += `<b style="color:${this.color}">${Duration.fromMillis(Date.now() -
-                                                                    this.roundTimestamps[this.roundTimestamps.length -
-                                                                    1])
-        .toFormat('s.S')}</b>`;
+      const time: string = Duration
+        .fromMillis(Date.now() - this.roundTimestamps[this.roundTimestamps.length - 1])
+        .toFormat('s.S');
+
+      text += `<b style="color:${this.color}">${time}</b>`;
       text += '<br>';
     }
 
@@ -197,5 +199,13 @@ export class Car {
     }
 
     this.timeDisplayElement.innerHTML = text;
+  }
+
+  private returnToPositionBeforeSlipping(): void {
+    this.isSlipping = false;
+    this.coordinates = Point.copy(this.outPosition);
+    this.prevCoordinates = Point.copy(this.outPrevPosition);
+    this.outPosition = null;
+    this.outPrevPosition = null;
   }
 }

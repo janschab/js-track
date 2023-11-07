@@ -1,4 +1,9 @@
-export function createElement(type: 'div' | 'button', parent: HTMLElement, className: string = '', props: Record<string, string> = {}): HTMLElement {
+export function createElement(
+  type: 'div' | 'button',
+  parent: HTMLElement,
+  className: string = '',
+  props: Record<string, string> = {},
+): HTMLElement {
   const element = document.createElement(type);
 
   if (className) {

@@ -90,7 +90,7 @@ export class Track {
     });
   }
 
-  drawTrack(elementHTML) {
+  drawTrack(elementHTML: HTMLElement): void {
     this.trackElement = document.createElement('div');
     this.trackElement.classList.add('track');
     this.trackElement.style.width = this.size.x * DEFAULT_DIMENSION + 'px';
@@ -117,12 +117,7 @@ export class Track {
     };
   }
 
-  /**
-   *
-   * @param {Point} coordinates
-   * @return {TrackTile}
-   */
-  getTileFromCoordinates(coordinates) {
+  getTileFromCoordinates(coordinates: Point): TrackTile {
     return Object.values(this.tiles).find((tile) => {
       return (coordinates.x <
              ((tile.position.x + 1) * DEFAULT_DIMENSION) &&
@@ -135,17 +130,14 @@ export class Track {
     });
   }
 
-  /**
-   * @return TrackTile
-   */
-  getTileFromPosition(position) {
+  getTileFromPosition(position: Point): TrackTile {
     return Object.values(this.tiles).find((tile) => {
       return position.x < (tile.position.x + 1) && position.x >= (tile.position.x) &&
              (position.y < tile.position.y + 1 && position.y >= tile.position.y);
     });
   }
 
-  calculateDirection() {
+  calculateDirection(): void {
     if (this.trackElement) {
       const startTile = this.getTileFromPosition(state.startTile$.value).setStartCoordinates(state.direction$.value);
 
@@ -168,7 +160,7 @@ export class Track {
     }
   }
 
-  destroy() {
+  destroy(): void {
     this.trackElement.parentElement.removeChild(this.trackElement);
   }
 }

@@ -27,11 +27,11 @@ class State {
     });
   }
 
-  toggleDirectionMode(state: boolean) {
+  toggleDirectionMode(state: boolean): void {
     this.directionMode = state;
   }
 
-  toggleDirection() {
+  toggleDirection(): void {
     this.direction$.next(this.direction$.value === Direction.NORMAL ? Direction.OPPOSITE : Direction.NORMAL);
   }
 }
