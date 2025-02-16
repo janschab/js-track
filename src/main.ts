@@ -12,7 +12,8 @@ export class TrackMania {
   private elementHTML: HTMLElement;
   private timeCallback: (time: number, times: Array<number>) => void;
 
-  public init(elementHTML: HTMLElement, timeCallback: (time: number, times: Array<number>) => void): void {
+  public init(elementHTML: HTMLElement, timeCallback: (time: number, times: Array<number>) => void, editMode: boolean = false): void {
+    gameState.editMode = editMode;
     this.elementHTML = elementHTML;
     this.game = new Game();
     this.timeCallback = timeCallback ?? (() => {
@@ -66,5 +67,9 @@ export class TrackMania {
         this.animationLoop();
       }
     });
+  }
+
+  setTouchThrottle(values: Record<string, boolean>) {
+    this.game.touchThrottle = values;
   }
 }

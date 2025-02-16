@@ -155,12 +155,37 @@ export class Track {
           tile = this.getTileFromCoordinates(prevTile.endCoordinates);
         }
       } catch (e) {
-        alert('fix the track');
+        console.error(new Error('broken track'));
       }
     }
   }
 
+  isValid() {
+    try {
+      const firstTile = this.getFirstTile();
+      const startTile = this.getTileFromPosition(firstTile.position).setStartCoordinates(Direction.NORMAL);
+      let prevTile = startTile;
+      let tile = this.getTileFromCoordinates(startTile.endCoordinates);
+
+      while (!firstTile.position.equals(tile.position)) {
+        tile.setStartCoordinatesFromPrevious(prevTile.endCoordinates);
+
+        prevTile = tile;
+        tile = this.getTileFromCoordinates(prevTile.endCoordinates);
+      }
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
+
   destroy(): void {
     this.trackElement.parentElement.removeChild(this.trackElement);
+  }
+
+  private getFirstTile() {
+    return Object.values(this.tiles).find((tile) => {
+      return tile.type !== null;
+    });
   }
 }

@@ -1,0 +1,76 @@
+.track {
+  position: relative;
+
+  .track-tile {
+    outline: 2px solid rgba(0, 0, 0, 0.1);;
+    background-color: rgba(0, 0, 0, 0.05);
+    position: absolute;
+    opacity: .5;
+    background-size: contain;
+
+    &--00 {
+      background-image: url("../img/00.png");
+    }
+    &--01 {
+      background-image: url("../img/01.png");
+    }
+    &--12 {
+      background-image: url("../img/12.png");
+    }
+    &--13 {
+      background-image: url("../img/13.png");
+    }
+    &--14 {
+      background-image: url("../img/14.png");
+    }
+    &--15 {
+      background-image: url("../img/15.png");
+    }
+  }
+}
+
+.start-point {
+  $thickness: 15px;
+  position: absolute;
+  z-index: 999999;
+  width: 0;
+  height: 0;
+
+  &--right {
+    border-top: $thickness solid transparent;
+    border-bottom: $thickness solid transparent;
+    border-left: $thickness solid black;
+    transform: translate(-15px, -15px);
+  }
+
+  &--left {
+    border-top: $thickness solid transparent;
+    border-bottom: $thickness solid transparent;
+    border-right: $thickness solid black;
+    transform: translate(0, -15px);
+  }
+
+  &--up {
+    border-left: $thickness solid transparent;
+    border-right: $thickness solid transparent;
+    border-bottom: $thickness solid black;
+    transform: translate(-15px, 0);
+  }
+
+  &--down {
+    border-left: $thickness solid transparent;
+    border-right: $thickness solid transparent;
+    border-top: $thickness solid black;
+    transform: translate(-15px, -15px);
+  }
+}
+
+.end-point {
+  width: 10px;
+  height: 10px;
+  background-color: #0048ff;
+  position: absolute;
+  z-index: 999999;
+  transform: translate(-5px, -5px);
+  border-radius: 50%;
+}

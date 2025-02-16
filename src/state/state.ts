@@ -8,9 +8,10 @@ class State {
   public direction$: BehaviorSubject<Direction>;
   public directionMode: boolean;
   public size: Point;
+  public editMode: boolean = false;
 
   constructor() {
-    this.startTile$ = new BehaviorSubject(Point.from(0, 0));
+    this.startTile$ = new BehaviorSubject(Point.from(-1, -1));
     this.direction$ = new BehaviorSubject(Direction.NORMAL);
     this.directionMode = false;
     this.size = Point.from(DEFAULT_X_SIZE, DEFAULT_Y_SIZE);

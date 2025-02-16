@@ -1,6 +1,6 @@
 {
   "name": "tor",
-  "version": "0.0.17",
+  "version": "1.0.3",
   "description": "",
   "keywords": [
     "game",
@@ -13,7 +13,7 @@
   "module": "dist/module.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "parcel build",
+    "build": "parcel build --no-cache",
     "postbuild": "npm pack",
     "dev": "parcel index.html --open",
     "start": "npm run build && npm run dev",

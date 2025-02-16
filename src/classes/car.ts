@@ -174,7 +174,9 @@ export class Car {
   }
 
   initTimeDisplay(): void {
-    this.timeDisplayElement = createElement('div', document.querySelector('.time-wrapper'), 'time-display');
+    if (document.querySelector('.time-wrapper')) {
+      this.timeDisplayElement = createElement('div', document.querySelector('.time-wrapper'), 'time-display');
+    }
   }
 
   drawTimes(): void {
@@ -198,7 +200,9 @@ export class Car {
       });
     }
 
-    this.timeDisplayElement.innerHTML = text;
+    if (this.timeDisplayElement) {
+      this.timeDisplayElement.innerHTML = text;
+    }
   }
 
   private returnToPositionBeforeSlipping(): void {

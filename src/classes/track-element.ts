@@ -17,7 +17,6 @@ export class TrackTile {
   public position: Point | null;
   public startCoordinates: Point | null;
   public endCoordinates: Point | null;
-  public startPointElement?: HTMLElement;
 
   constructor(tile: Partial<TrackTileCopy> = {}) {
     this.id = tile.id ?? null;
@@ -54,24 +53,37 @@ export class TrackTile {
 
       trackElement.appendChild(this.element);
 
-      this.element.addEventListener('click', () => {
-        this.handleClick();
-      });
+      if (state.editMode) {
+        this.element.addEventListener('click', () => {
+          this.handleClick();
+        });
+      }
     }
     if (this.type != null && this.subtype != null) {
       this.element.className = 'track-tile track-tile--' + this.type + this.subtype;
+    } else {
+      this.element.className = 'track-tile';
     }
     if (this.endCoordinates && this.isStartTile()) {
-      if (!this.startPointElement) {
-        this.startPointElement = document.createElement('div');
-        this.startPointElement.className = 'start-point';
-        trackElement.appendChild(this.startPointElement);
+      let startPointElement = document.querySelector('.start-point') as HTMLElement;
+      if (!startPointElement) {
+        startPointElement = document.createElement('div');
+        startPointElement.className = 'start-point';
+        trackElement.appendChild(startPointElement);
       }
-      this.startPointElement.style.top = this.endCoordinates.y + 'px';
-      this.startPointElement.style.left = this.endCoordinates.x + 'px';
-    }
+      startPointElement.style.top = this.endCoordinates.y + 'px';
+      startPointElement.style.left = this.endCoordinates.x + 'px';
 
-    this.element.style.backgroundColor = this.isStartTile() ? '#ff7e7e' : 'white';
+      const sx = this.startCoordinates.x;
+      const sy = this.startCoordinates.y;
+      const ex = this.endCoordinates.x;
+      const ey = this.endCoordinates.y;
+      let direction = this.getStartingPointDirection(
+        sx, sy, ex, ey
+      );
+
+      startPointElement.className = `start-point start-point--${direction}`;
+    }
   }
 
   handleClick(): void {
@@ -91,9 +103,12 @@ export class TrackTile {
       this.subtype = TrackTileSubtype.NE;
     } else if (this.type === TrackTileType.BEND && this.subtype < TrackTileSubtype.NW) {
       this.subtype++;
-    } else {
+    } else if (this.type === null) {
       this.type = TrackTileType.STRAIGHT;
       this.subtype = TrackTileSubtype.HORIZONTAL;
+    } else {
+      this.type = null;
+      this.subtype = null;
     }
 
     this.drawTile();
@@ -144,5 +159,46 @@ export class TrackTile {
       size: this.size,
       subtype: this.subtype,
     };
+  }
+
+  private getStartingPointDirection(sx: number, sy: number, ex: number, ey: number) {
+    switch (this.subtype) {
+      case TrackTileSubtype.HORIZONTAL: {
+        if (ex > sx) {
+          return 'right';
+        }
+        return 'left';
+      }
+      case TrackTileSubtype.VERTICAL: {
+        if (ey > sy) {
+          return 'down';
+        }
+        return 'up';
+      }
+      case TrackTileSubtype.NE: {
+        if (ex > sx) {
+          return 'right';
+        }
+        return 'up';
+      }
+      case TrackTileSubtype.SE: {
+        if (ex > sx) {
+          return 'right';
+        }
+        return 'down';
+      }
+      case TrackTileSubtype.NW: {
+        if (ex < sx) {
+          return 'left';
+        }
+        return 'up';
+      }
+      case TrackTileSubtype.SW: {
+        if (ex < sx) {
+          return 'left';
+        }
+        return 'down';
+      }
+    }
   }
 }

@@ -2,6 +2,7 @@ export class Game {
   public keys: Record<string, boolean>;
   public time: number;
   public timeDiff: number;
+  public touchThrottle: Record<string, boolean> = {};
 
   constructor() {
     this.keys = {};
@@ -18,7 +19,7 @@ export class Game {
   }
 
   getKey(key: string): boolean {
-    return this.keys[key];
+    return this.keys[key] ?? this.touchThrottle[key];
   }
 
   tick(): void {
